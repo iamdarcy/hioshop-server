@@ -2,7 +2,7 @@
   "apps": [{
     "name": "hiolabs",
     "script": "production.js",
-    "cwd": "/var/www/hiolabs-server",
+    "cwd": "/var/www/hioshop-server",
     "exec_mode": "fork",
     "max_memory_restart": "1G",
     "autorestart": true,
