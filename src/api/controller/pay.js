@@ -59,6 +59,7 @@ module.exports = class extends Base {
         const WeixinSerivce = this.service('weixin', 'api');
         const data = this.post('xml');
         const result = WeixinSerivce.payNotify(this.post('xml'));
+        
         if (!result) {
             let echo = 'FAIL';
             return this.json(echo);
