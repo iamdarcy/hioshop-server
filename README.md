@@ -19,7 +19,7 @@ git clone https://github.com/iamdarcy/hioshop-server
 + 创建数据库hiolabsDB并导入项目根目录下的hioshop.sql  
 推荐使用软件Navicat创建和管理数据库，也可以用以下命令创建：
 ```
-CREATE SCHEMA `nideshop` DEFAULT CHARACTER SET utf8mb4 ;
+CREATE SCHEMA `hiolabsDB` DEFAULT CHARACTER SET utf8mb4 ;
 ```
 > 注意数据库字符编码为utf8mb4 
 + 更改数据库配置
