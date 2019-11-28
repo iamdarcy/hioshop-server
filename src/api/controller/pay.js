@@ -8,7 +8,7 @@ module.exports = class extends Base {
      * @returns {Promise<PreventPromise|void|Promise>}
      */
     // 测试时付款，将真实接口注释。
-    async preWeixinPayAction() {
+    async preWeixinPayaAction() {
         const orderId = this.get('orderId');
         const orderInfo = await this.model('order').where({
             id: orderId
