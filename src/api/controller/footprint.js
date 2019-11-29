@@ -8,7 +8,6 @@ module.exports = class extends Base {
      */
     async deleteAction() {
         const footprintId = this.post('footprintId');
-        console.log(footprintId);
         const userId = think.userId;    
         // 删除当天的同一个商品的足迹
         await this.model('footprint').where({
@@ -34,7 +33,6 @@ module.exports = class extends Base {
         }).page(page, size).order({
             add_time: 'desc'
         }).field('id,goods_id,add_time').countSelect();
-        console.log(list.data);
         for (const item of list.data) {
             let goods = await this.model('goods').where({
                 id:item.goods_id
@@ -45,7 +43,6 @@ module.exports = class extends Base {
                 item.add_time = '今天';
             }
         }
-        console.log(list);
         return this.success(list);
     }
 };

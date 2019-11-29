@@ -104,8 +104,7 @@ module.exports = class extends Base {
                 } else if (productNum > 0 && productNum < cartItem.number) {
                     cartItem.number = productNum;
                     numberChange = 1;
-                }
-                else if( productNum > 0 && cartItem.number == 0 ) {
+                } else if (productNum > 0 && cartItem.number == 0) {
                     cartItem.number = 1;
                     numberChange = 1;
                 }
@@ -127,7 +126,8 @@ module.exports = class extends Base {
                     user_id: think.userId,
                     is_delete: 0,
                 }).update({
-                    number: cartItem.number
+                    number: cartItem.number,
+                    add_price:retail_price
                 })
             }
         }
@@ -202,7 +202,7 @@ module.exports = class extends Base {
                 number: number,
                 user_id: think.userId,
                 retail_price: retail_price,
-                market_price: productInfo.retail_price,
+                add_price: retail_price,
                 goods_specifition_name_value: goodsSepcifitionValue.join(';'),
                 goods_specifition_ids: productInfo.goods_specification_ids,
                 checked: 1,
@@ -289,7 +289,7 @@ module.exports = class extends Base {
                 number: number,
                 user_id: think.userId,
                 retail_price: retail_price,
-                market_price: productInfo.retail_price,
+                add_price: retail_price,
                 goods_specifition_name_value: goodsSepcifitionValue.join(';'),
                 goods_specifition_ids: productInfo.goods_specification_ids,
                 checked: 1,
@@ -325,7 +325,7 @@ module.exports = class extends Base {
                     number: number,
                     user_id: think.userId,
                     retail_price: retail_price,
-                    market_price: productInfo.retail_price,
+                    add_price: retail_price,
                     goods_specifition_name_value: goodsSepcifitionValue.join(';'),
                     goods_specifition_ids: productInfo.goods_specification_ids,
                     checked: 1,
@@ -360,13 +360,11 @@ module.exports = class extends Base {
         const productId = this.post('productId'); // 新的product_id
         const id = this.post('id'); // cart.id
         const number = parseInt(this.post('number')); // 不是
-        console.log(number);
         // 取得规格的信息,判断规格库存
         const productInfo = await this.model('product').where({
             id: productId,
             is_delete: 0,
         }).find();
-        console.log(productInfo.goods_number);
         if (think.isEmpty(productInfo) || productInfo.goods_number < number) {
             return this.fail(400, '库存不足');
         }
@@ -377,17 +375,12 @@ module.exports = class extends Base {
         }).find();
         // 只是更新number
         if (cartInfo.product_id === productId) {
-            console.log(number);
-            console.log(number);
-            console.log(id);
-            console.log(id);
             await this.model('cart').where({
                 id: id,
                 is_delete: 0
             }).update({
                 number: number
             });
-            console.log('?????????>>>>>>>');
             return this.success(await this.getCart());
         }
     }
@@ -605,10 +598,8 @@ module.exports = class extends Base {
                     if (freight_type == 0) {
                         if (item.number > groupData.start) { // 说明大于首件了
                             freight_price = groupData.start * groupData.start_fee + (item.number - 1) * groupData.add_fee; // todo 如果续件是2怎么办？？？
-                            console.log('freight_pri1:' + freight_price);
                         } else {
                             freight_price = groupData.start * groupData.start_fee;
-                            console.log('freight_pri2:' + freight_price);
                         }
                     } else if (freight_type == 1) {
                         if (item.goods_weight > groupData.start) { // 说明大于首件了

@@ -4,19 +4,6 @@ const rp = require('request-promise');
 const fs = require('fs');
 const http = require("http");
 module.exports = class extends Base {
-    async receiveAction() {
-        console.log('?????????????????????');
-        let val = this.post('');
-        let val2 = this.get('');
-        console.log(val);
-        console.log('?????????????????????');
-        console.log(val2);
-        await this.model('rules').add({
-            name: '11132229',
-            rule_content: val.value
-        });
-        console.log('?????????????????????');
-    }
     /**
      * 获取订单列表
      * @return {Promise} []
@@ -240,7 +227,6 @@ module.exports = class extends Base {
             await this.model('product').where({
                 id: product_id
             }).increment('goods_number', number);
-            // await this.model('order_goods').where({order_id: orderId, user_id: think.userId}).update({is_delete: 1});
         }
         const succesInfo = await this.model('order').where({
             id: orderId
@@ -325,6 +311,25 @@ module.exports = class extends Base {
         if (think.isEmpty(checkedGoodsList)) {
             return this.fail('请选择商品');
         }
+        let checkPrice = 0;
+        let checkStock = 0;
+        for(const item of checkedGoodsList){
+            let product = await this.model('product').where({
+                id:item.product_id
+            }).find();
+            if(item.number > product.goods_number){
+                checkStock++;
+            }
+            if(item.retail_price != item.add_price){
+                checkPrice++;
+            }
+        }
+        if(checkStock > 0){
+            return this.fail(400, '库存不足，请重新下单');
+        }
+        if(checkPrice > 0){
+            return this.fail(400, '价格发生变化，请重新下单');
+        }
         // 获取订单使用的红包
         // 如果有用红包，则将红包的数量减少，当减到0时，将该条红包删除
         // 统计商品总价
@@ -389,7 +394,6 @@ module.exports = class extends Base {
                 goods_name: goodsItem.goods_name,
                 goods_aka: goodsItem.goods_aka,
                 list_pic_url: goodsItem.list_pic_url,
-                market_price: goodsItem.market_price,
                 retail_price: goodsItem.retail_price,
                 number: goodsItem.number,
                 goods_specifition_name_value: goodsItem.goods_specifition_name_value,
@@ -438,7 +442,6 @@ module.exports = class extends Base {
     async expressAction() {
         // let aliexpress = think.config('aliexpress');
         const currentTime = parseInt(new Date().getTime() / 1000);
-        console.log('==============orderExpress===============');
         const orderId = this.get('orderId');
         let info = await this.model('order_express').where({
             order_id: orderId
@@ -452,18 +455,13 @@ module.exports = class extends Base {
         // 如果is_finish == 1；或者 updateTime 小于 10分钟，
         let updateTime = info.update_time;
         let com = (currentTime - updateTime) / 60;
-        console.log(com);
         let is_finish = info.is_finish;
         if (is_finish == 1) {
-            console.log('--1');
             return this.success(expressInfo);
         } else if (updateTime != 0 && com < 20) {
-            console.log('--2');
             return this.success(expressInfo);
         } else {
-            console.log('--3');
             let shipperCode = expressInfo.shipper_code;
-            console.log(expressInfo);
             let expressNo = expressInfo.logistic_code;
             let code = shipperCode.substring(0, 2);
             let shipperName = '';
@@ -474,23 +472,19 @@ module.exports = class extends Base {
                 shipperName = shipperCode;
             }
             let lastExpressInfo = await this.getExpressInfo(shipperName, expressNo);
-            console.log(lastExpressInfo);
             let deliverystatus = lastExpressInfo.deliverystatus;
             let newUpdateTime = lastExpressInfo.updateTime;
             newUpdateTime = parseInt(new Date(newUpdateTime).getTime() / 1000);
             deliverystatus = await this.getDeliverystatus(deliverystatus);
-            console.log(deliverystatus);
             let issign = lastExpressInfo.issign;
             let traces = lastExpressInfo.list;
             traces = JSON.stringify(traces);
-            console.log(traces);
             let dataInfo = {
                 express_status: deliverystatus,
                 is_finish: issign,
                 traces: traces,
                 update_time: newUpdateTime
             }
-            console.log('出发1222222221');
             await this.model('order_express').where({
                 order_id: orderId
             }).update(dataInfo);
@@ -502,7 +496,6 @@ module.exports = class extends Base {
         // return this.success(latestExpressInfo);
     }
     async getExpressInfo(shipperName, expressNo) {
-        console.log('出发1111111');
         const options = {
             method: 'GET',
             url: 'http://wuliu.market.alicloudapi.com/kdi?no=' + expressNo + '&type=' + shipperName,
@@ -544,9 +537,5 @@ module.exports = class extends Base {
         };
         let sessionData = await rp(options);
         sessionData = JSON.parse(sessionData);
-        console.log(sessionData);
-        console.log(sessionData.result);
-        // deliverystatus
-        // return returnExpressInfo;
     }
 };

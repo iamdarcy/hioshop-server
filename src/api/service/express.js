@@ -1,6 +1,5 @@
 const rp = require('request-promise');
 const _ = require('lodash');
-
 module.exports = class extends think.Service {
     async queryExpress(shipperCode, logisticCode, orderCode = '') {
         // 最终得到的数据，初始化
@@ -40,7 +39,6 @@ module.exports = class extends think.Service {
             return expressInfo;
         }
     }
-
     // 快递物流信息请求系统级参数 要post的数据，进行编码，签名
     generateFromData(shipperCode, logisticCode, orderCode) {
         const requestData = this.generateRequestData(shipperCode, logisticCode, orderCode);
@@ -53,7 +51,6 @@ module.exports = class extends think.Service {
         };
         return fromData;
     }
-
     // JavaScript 值转换为 JSON 字符串。
     generateRequestData(shipperCode, logisticCode, orderCode = '') {
         // 参数验证
@@ -64,12 +61,10 @@ module.exports = class extends think.Service {
         };
         return JSON.stringify(requestData);
     }
-
     // 编码加密
     generateDataSign(requestData) {
         return encodeURI(Buffer.from(think.md5(requestData + think.config('express.appkey'))).toString('base64'));
     }
-
     parseExpressResult(requestResult) {
         const expressInfo = {
             success: false,
@@ -79,11 +74,9 @@ module.exports = class extends think.Service {
             isFinish: 0,
             traces: []
         };
-
         if (think.isEmpty(requestResult)) {
             return expressInfo;
         }
-
         try {
             if (_.isString(requestResult)) {
                 requestResult = JSON.parse(requestResult); // 将一个 JSON 字符串转换为对象。
@@ -91,11 +84,9 @@ module.exports = class extends think.Service {
         } catch (err) {
             return expressInfo;
         }
-
         if (think.isEmpty(requestResult.Success)) {
             return expressInfo;
         }
-
         // 判断是否已签收
         if (Number.parseInt(requestResult.State) === 3) {
             expressInfo.isFinish = 1;
@@ -103,16 +94,16 @@ module.exports = class extends think.Service {
         expressInfo.success = true;
         if (!think.isEmpty(requestResult.Traces) && Array.isArray(requestResult.Traces)) {
             expressInfo.traces = _.map(requestResult.Traces, item => {
-                return {datetime: item.AcceptTime, content: item.AcceptStation};
+                return {
+                    datetime: item.AcceptTime,
+                    content: item.AcceptStation
+                };
             });
             _.reverse(expressInfo.traces);
         }
         return expressInfo;
     }
-
-
     // 电子面单开始
-
     async mianExpress(data = {}) {
         // 从前台传过来的数据
         let expressInfo = data;
@@ -137,17 +128,13 @@ module.exports = class extends think.Service {
                 return expressInfo;
             }
             expressInfo = this.parseMianExpressResult(requestResult);
-
             let htmldata = expressInfo.PrintTemplate;
             let html = htmldata.toString();
             return expressInfo;
-
         } catch (err) {
             return expressInfo;
         }
     }
-
-
     // 电子面单信息请求系统级参数 要post的数据 进行编码，签名
     mianFromData(data) {
         const requestData = JSON.stringify(data); // data：post进来的 // JavaScript 值转换为 JSON 字符串。
@@ -161,45 +148,34 @@ module.exports = class extends think.Service {
         // console.log('fromdata======');
         return fromData;
     }
-
     // 加密签名
     mianDataSign(requestData) {
         return encodeURI(Buffer.from(think.md5(requestData + think.config('mianexpress.appkey'))).toString('base64'));
     }
-
     // 返回数据
     parseMianExpressResult(requestResult) {
         const expressInfo = {
             success: false,
         };
-
         if (think.isEmpty(requestResult)) {
             return expressInfo;
         }
-
         try {
             if (_.isString(requestResult)) {
                 requestResult = JSON.parse(requestResult);
             }
             return requestResult;
-
         } catch (err) {
             return expressInfo;
         }
         return expressInfo;
     }
-
     // 电子面单结束
-
     // 批量打印开始
-
-
-   // build_form();
-
+    // build_form();
     /**
      * 组装POST表单用于调用快递鸟批量打印接口页面
      */
-
     async buildForm(data = {}) {
         let requestData = data;
         requestData = '[{"OrderCode":"234351215333113311353","PortName":"打印机名称一"}]';
@@ -208,22 +184,19 @@ module.exports = class extends think.Service {
         let requestDataEncode = encodeURI(requestData);
         let APIKey = think.config('mianexpress.appkey');
         let API_URL = think.config('mianexpress.print_url');
-        let dataSign = this.printDataSign(this.get_ip(),requestDataEncode);
+        let dataSign = this.printDataSign(this.get_ip(), requestDataEncode);
         //是否预览，0-不预览 1-预览
         let is_priview = '0';
         let EBusinessID = think.config('mianexpress.appid');
         //组装表单
-        console.log('hahaaaaaaaaaa ');
-        let form = '<form id="form1" method="POST" action="'+API_URL+'"><input type="text" name="RequestData" value="'+ requestData + '"/><input type="text" name="EBusinessID" value="'+ EBusinessID +'"/><input type="text" name="DataSign" value="'+dataSign + '"/><input type="text" name="IsPriview" value="'+ is_priview + '"/></form><script>form1.submit();</script>';
+        let form = '<form id="form1" method="POST" action="' + API_URL + '"><input type="text" name="RequestData" value="' + requestData + '"/><input type="text" name="EBusinessID" value="' + EBusinessID + '"/><input type="text" name="DataSign" value="' + dataSign + '"/><input type="text" name="IsPriview" value="' + is_priview + '"/></form><script>form1.submit();</script>';
         console.log(form);
         return form;
     }
-
     // 加密签名
-    printDataSign(ip,requestData) {
+    printDataSign(ip, requestData) {
         return encodeURI(Buffer.from(ip + think.md5(requestData + think.config('mianexpress.appkey'))).toString('base64'));
     }
-
     /**
      * 判断是否为内网IP
      * @param ip IP
@@ -232,7 +205,6 @@ module.exports = class extends think.Service {
     // function is_private_ip($ip) {
     //     return !filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE);
     // }
-
     /**
      * 获取客户端IP(非用户服务器IP)
      * @return 客户端IP
@@ -252,18 +224,13 @@ module.exports = class extends think.Service {
                 let i = 0
                 return i;
             }
-
             var ip = /\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/;
             var text = ip.exec(requestResult);
             console.log(text[0]);
             return text[0];
-
         } catch (err) {
             return 0;
         }
     }
-
-
     // 批量打印结束
-
 };

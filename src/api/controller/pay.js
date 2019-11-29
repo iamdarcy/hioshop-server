@@ -28,6 +28,30 @@ module.exports = class extends Base {
         const orderInfo = await this.model('order').where({
             id: orderId
         }).find();
+        // 再次确认库存和价格
+        let orderGoods = await this.model('order_goods').where({
+            order_id:orderId,
+            is_delete:0
+        }).select();
+        let checkPrice = 0;
+        let checkStock = 0;
+        for(const item of orderGoods){
+            let product = await this.model('product').where({
+                id:item.product_id
+            }).find();
+            if(item.number > product.goods_number){
+                checkStock++;
+            }
+            if(item.retail_price != product.retail_price){
+                checkPrice++;
+            }
+        }
+        if(checkStock > 0){
+            return this.fail(400, '库存不足，请重新下单');
+        }
+        if(checkPrice > 0){
+            return this.fail(400, '价格发生变化，请重新下单');
+        }
         let userId = orderInfo.user_id;
         if (think.isEmpty(orderInfo)) {
             return this.fail(400, '订单已取消');
@@ -83,12 +107,6 @@ module.exports = class extends Base {
         return this.json(echo);
     }
     async afterPay(orderInfo) {
-        const currentTime = parseInt(new Date().getTime() / 1000);
-        let userId = orderInfo.user_id;
-        let userInfo = await this.model('user').where({
-            id: userId
-        }).find();
-        // version 1.01
         if (orderInfo.order_type == 0) {
             let orderGoodsList = await this.model('order_goods').where({
                 order_id: orderInfo.id
@@ -110,49 +128,5 @@ module.exports = class extends Base {
             }
             // version 1.01
         }
-        let formInfo = await this.model('formid').where({
-            user_id: userId
-        }).find();
-        let formId = formInfo.form_id;
-        let user = await this.model('user').where({
-            id: userId
-        }).find();
-        let openId = user.weixin_openid;
-        orderInfo.province_name = await this.model('region').where({
-            id: orderInfo.province
-        }).getField('name', true);
-        orderInfo.city_name = await this.model('region').where({
-            id: orderInfo.city
-        }).getField('name', true);
-        orderInfo.district_name = await this.model('region').where({
-            id: orderInfo.district
-        }).getField('name', true);
-        orderInfo.full_region = orderInfo.province_name + orderInfo.city_name + orderInfo.district_name;
-        orderInfo.postscript = Buffer.from(orderInfo.postscript, 'base64').toString();
-        let _nickname = Buffer.from(user.nickname, 'base64').toString();
-        let money = orderInfo.actual_price;
-        let data = {
-            keyword1: {
-                value: orderInfo.print_info,
-            },
-            keyword2: {
-                value: money.toString(), // 订单号码
-            },
-            keyword3: {
-                value: orderInfo.consignee,
-            },
-            keyword4: {
-                value: orderInfo.mobile,
-            },
-            keyword5: {
-                value: orderInfo.full_region,
-            },
-            keyword6: {
-                value: orderInfo.postscript,
-            },
-            keyword7: {
-                value: _nickname
-            },
-        };
     }
 };

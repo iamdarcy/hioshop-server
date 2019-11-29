@@ -65,7 +65,6 @@ module.exports = class extends Base {
         sessionData.user_id = userId;
         // 查询用户信息
         let data = fullUserInfo.userInfo;
-        console.log(data);
         const newBuffer = Buffer.from(data.nickName);
         let newNickname = newBuffer.toString('base64');
         // 更新登录信息
