@@ -163,6 +163,13 @@ module.exports = class extends Base {
         });
         return this.success(info);
     }
+    async detailAction(){
+        let id = this.post('id');
+        let info = await this.model('specification').where({
+            id:id
+        }).find();
+        return this.success(info);
+    }
     async addAction() {
         const value = this.post('name');
         const sort = this.post('sort_order');
@@ -203,9 +210,10 @@ module.exports = class extends Base {
     async deleteAction() {
         const id = this.post('id');
         const goods_spec = await this.model('goods_specification').where({
-            id: id,
+            specification_id: id,
             is_delete: 0
         }).select();
+        console.log(goods_spec);
         if (goods_spec.length > 0) {
             return this.fail('该型号下有商品，暂不能删除')
         } else {
