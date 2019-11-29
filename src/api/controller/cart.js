@@ -37,7 +37,7 @@ module.exports = class extends Base {
             let num = info.goods_number;
             if (num <= 0) {
                 await this.model('cart').where({
-                    goods_id: cartItem.goods_id,
+                    product_id: cartItem.product_id,
                     user_id: think.userId,
                     checked: 1,
                     is_delete: 0,
@@ -73,6 +73,7 @@ module.exports = class extends Base {
         let goodsAmount = 0;
         let checkedGoodsCount = 0;
         let checkedGoodsAmount = 0;
+        let numberChange = 0;
         for (const cartItem of cartList) {
             let product = await this.model('product').where({
                 id: cartItem.product_id,
@@ -91,7 +92,7 @@ module.exports = class extends Base {
                 let productNum = product.goods_number;
                 if (productNum <= 0) {
                     await this.model('cart').where({
-                        goods_id: cartItem.goods_id,
+                        product_id: cartItem.product_id,
                         user_id: think.userId,
                         checked: 1,
                         is_delete: 0,
@@ -99,8 +100,14 @@ module.exports = class extends Base {
                         checked: 0
                     });
                     cartItem.number = 0;
+                    numberChange = 1;
                 } else if (productNum > 0 && productNum < cartItem.number) {
                     cartItem.number = productNum;
+                    numberChange = 1;
+                }
+                else if( productNum > 0 && cartItem.number == 0 ) {
+                    cartItem.number = 1;
+                    numberChange = 1;
                 }
                 goodsCount += cartItem.number;
                 goodsAmount += cartItem.number * retail_price;
@@ -115,6 +122,13 @@ module.exports = class extends Base {
                 }).field('list_pic_url').find();
                 cartItem.list_pic_url = info.list_pic_url;
                 cartItem.weight_count = cartItem.number * Number(cartItem.goods_weight);
+                await this.model('cart').where({
+                    product_id: cartItem.product_id,
+                    user_id: think.userId,
+                    is_delete: 0,
+                }).update({
+                    number: cartItem.number
+                })
             }
         }
         let cAmount = checkedGoodsAmount.toFixed(2);
@@ -126,7 +140,8 @@ module.exports = class extends Base {
                 goodsAmount: goodsAmount.toFixed(2),
                 checkedGoodsCount: checkedGoodsCount,
                 checkedGoodsAmount: cAmount,
-                user_id: think.userId
+                user_id: think.userId,
+                numberChange: numberChange
             }
         };
     }
@@ -157,7 +172,6 @@ module.exports = class extends Base {
         // 判断购物车中是否存在此规格商品
         const cartInfo = await this.model('cart').where({
             user_id: think.userId,
-            goods_id: productInfo.goods_id,
             product_id: productId,
             is_delete: 0
         }).find();
@@ -202,7 +216,6 @@ module.exports = class extends Base {
             }
             await this.model('cart').where({
                 user_id: think.userId,
-                goods_id: productInfo.goods_id,
                 product_id: productId,
                 is_delete: 0,
                 id: cartInfo.id
@@ -242,7 +255,6 @@ module.exports = class extends Base {
         // 判断购物车中是否存在此规格商品
         const cartInfo = await this.model('cart').where({
             user_id: think.userId,
-            goods_id: productInfo.goods_id,
             product_id: productId,
             is_delete: 0
         }).find();
@@ -327,7 +339,6 @@ module.exports = class extends Base {
                 }
                 await this.model('cart').where({
                     user_id: think.userId,
-                    goods_id: productInfo.goods_id,
                     product_id: productId,
                     is_delete: 0,
                     id: cartInfo.id
@@ -336,7 +347,6 @@ module.exports = class extends Base {
                 });
                 await this.model('cart').where({
                     user_id: think.userId,
-                    goods_id: productInfo.goods_id,
                     product_id: productId,
                     is_delete: 0,
                     id: cartInfo.id
@@ -347,15 +357,16 @@ module.exports = class extends Base {
     }
     // 更新指定的购物车信息
     async updateAction() {
-        const goodsId = this.post('goodsId');
         const productId = this.post('productId'); // 新的product_id
         const id = this.post('id'); // cart.id
         const number = parseInt(this.post('number')); // 不是
+        console.log(number);
         // 取得规格的信息,判断规格库存
         const productInfo = await this.model('product').where({
-            goods_id: goodsId,
-            id: productId
+            id: productId,
+            is_delete: 0,
         }).find();
+        console.log(productInfo.goods_number);
         if (think.isEmpty(productInfo) || productInfo.goods_number < number) {
             return this.fail(400, '库存不足');
         }
@@ -366,69 +377,19 @@ module.exports = class extends Base {
         }).find();
         // 只是更新number
         if (cartInfo.product_id === productId) {
+            console.log(number);
+            console.log(number);
+            console.log(id);
+            console.log(id);
             await this.model('cart').where({
                 id: id,
                 is_delete: 0
             }).update({
                 number: number
             });
+            console.log('?????????>>>>>>>');
             return this.success(await this.getCart());
         }
-        const newCartInfo = await this.model('cart').where({
-            goods_id: goodsId,
-            product_id: productId,
-            is_delete: 0
-        }).find();
-        if (think.isEmpty(newCartInfo)) {
-            // 直接更新原来的cartInfo
-            // 添加规格名和值
-            let goodsSepcifition = [];
-            if (!think.isEmpty(productInfo.goods_specification_ids)) {
-                goodsSepcifition = await this.model('goods_specification').field(['nideshop_goods_specification.*', 'nideshop_specification.name']).join('nideshop_specification ON nideshop_specification.id=nideshop_goods_specification.specification_id').where({
-                    'nideshop_goods_specification.goods_id': goodsId,
-                    'nideshop_goods_specification.id': {
-                        'in': productInfo.goods_specification_ids.split('_')
-                    }
-                }).select();
-            }
-            const cartData = {
-                number: number,
-                goods_specifition_name_value: JSON.stringify(goodsSepcifition),
-                goods_specifition_ids: productInfo.goods_specification_ids,
-                retail_price: productInfo.retail_price,
-                market_price: productInfo.retail_price,
-                product_id: productId,
-                goods_sn: productInfo.goods_sn
-            };
-            await this.model('cart').where({
-                id: id,
-                is_delete: 0
-            }).update(cartData);
-        } else {
-            // 合并购物车已有的product信息，删除已有的数据
-            const newNumber = number + newCartInfo.number;
-            if (think.isEmpty(productInfo) || productInfo.goods_number < newNumber) {
-                return this.fail(400, '库存不足');
-            }
-            await this.model('cart').where({
-                id: newCartInfo.id,
-                is_delete: 0
-            }).delete();
-            const cartData = {
-                number: newNumber,
-                goods_specifition_name_value: newCartInfo.goods_specifition_name_value,
-                goods_specifition_ids: newCartInfo.goods_specification_ids,
-                retail_price: productInfo.retail_price,
-                market_price: productInfo.retail_price,
-                product_id: productId,
-                goods_sn: productInfo.goods_sn
-            };
-            await this.model('cart').where({
-                id: id,
-                is_delete: 0
-            }).update(cartData);
-        }
-        return this.success(await this.getCart());
     }
     // 是否选择商品，如果已经选择，则取消选择，批量操作
     async checkedAction() {
@@ -683,6 +644,7 @@ module.exports = class extends Base {
         }).find();
         orderTotalPrice = Number(money) + Number(freightPrice) // 订单的总价
         const actualPrice = orderTotalPrice; // 减去其它支付的金额后，要实际支付的金额
+        let numberChange = cartData.cartTotal.numberChange;
         return this.success({
             checkedAddress: checkedAddress,
             freightPrice: freightPrice,
@@ -692,6 +654,7 @@ module.exports = class extends Base {
             actualPrice: actualPrice.toFixed(2),
             goodsCount: goodsCount,
             outStock: outStock,
+            numberChange: numberChange,
         });
     }
     async getAgainCart(orderFrom) {
@@ -732,7 +695,7 @@ module.exports = class extends Base {
             let num = info.goods_number;
             if (num <= 0) {
                 await this.model('cart').where({
-                    goods_id: cartItem.goods_id,
+                    product_id: cartItem.product_id,
                     user_id: think.userId,
                     checked: 1,
                     is_delete: 0,

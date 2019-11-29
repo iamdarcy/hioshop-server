@@ -1,11 +1,16 @@
 const moment = require('moment');
 const _ = require('lodash');
+const rp = require('request-promise');
+const fs = require('fs');
+const http = require("http");
+const path = require('path');
+
 module.exports = class extends think.Model {
     get tableName() {
         return this.tablePrefix + 'order_express';
     }
     /**
-     * 获取最新的订单物流信息
+     * 获取最新的订单物流信息  快递鸟，不能查顺丰
      * @param orderId
      * @returns {Promise.<*>}
      */
@@ -58,6 +63,108 @@ module.exports = class extends think.Model {
             id: orderExpress.id
         }).update(updateData);
         return returnExpressInfo;
+    }
+    /**
+     * 获取最新的订单物流信息  阿里云快递api 收费
+     * @param orderId
+     * @returns {Promise.<*>}
+     */
+    async getLatestOrderExpressByAli(orderId) {
+        // let aliexpress = think.config('aliexpress');
+        const currentTime = parseInt(new Date().getTime() / 1000);
+        console.log('==============orderExpress===============');
+        let info = await this.model('order_express').where({
+            order_id: orderId
+        }).find();
+        if (think.isEmpty(info)) {
+            return this.fail(400, '暂无物流信息');
+        }
+        const expressInfo = await this.model('order_express').where({
+            order_id: orderId
+        }).find();
+        // 如果is_finish == 1；或者 updateTime 小于 10分钟，
+        let updateTime = info.update_time;
+        let com = (currentTime - updateTime) / 60;
+        console.log(com);
+        let is_finish = info.is_finish;
+        if (is_finish == 1) {
+            console.log('--1');
+            return expressInfo;
+        } else if (updateTime != 0 && com < 20) {
+            console.log('--2');
+            return expressInfo;
+        } else {
+            console.log('--3');
+            let shipperCode = expressInfo.shipper_code;
+            console.log(expressInfo);
+            let expressNo = expressInfo.logistic_code;
+            let code = shipperCode.substring(0, 2);
+            let shipperName = '';
+            if (code == "SF") {
+                shipperName = "SFEXPRESS";
+                expressNo = expressNo + ':0580'; // 这个要根据自己的寄件时的手机末四位
+            } else {
+                shipperName = shipperCode;
+            }
+            let lastExpressInfo = await this.getExpressInfo(shipperName, expressNo);
+            console.log(lastExpressInfo);
+            let deliverystatus = lastExpressInfo.deliverystatus;
+            let newUpdateTime = lastExpressInfo.updateTime;
+            newUpdateTime = parseInt(new Date(newUpdateTime).getTime() / 1000);
+            deliverystatus = await this.getDeliverystatus(deliverystatus);
+            console.log(deliverystatus);
+            let issign = lastExpressInfo.issign;
+            let traces = lastExpressInfo.list;
+            traces = JSON.stringify(traces);
+            console.log(traces);
+            let dataInfo = {
+                express_status: deliverystatus,
+                is_finish: issign,
+                traces: traces,
+                update_time: newUpdateTime
+            }
+            console.log('出发1222222221');
+            await this.model('order_express').where({
+                order_id: orderId
+            }).update(dataInfo);
+            let express = await this.model('order_express').where({
+                order_id: orderId
+            }).find();
+            return express;
+        }
+        // return this.success(latestExpressInfo);
+    }
+    async getExpressInfo(shipperName, expressNo) {
+        console.log('出发1111111');
+        const options = {
+            method: 'GET',
+            url: 'http://wuliu.market.alicloudapi.com/kdi?no=' + expressNo + '&type=' + shipperName,
+            headers: {
+                "Content-Type": "application/json; charset=utf-8",
+                // "Authorization": "APPCODE f85be5270caf40c7a784ce3682fc4c8e"
+                "Authorization": "APPCODE 9d78e3dcbc7c48ef9d0e6e7b1bac46b8"
+            }
+        };
+        let sessionData = await rp(options);
+        sessionData = JSON.parse(sessionData);
+        return sessionData.result;
+    }
+    async getDeliverystatus(status) {
+        if (status == 0) {
+            return '快递收件(揽件)';
+        } else if (status == 1) {
+            return '在途中';
+        } else if (status == 2) {
+            return '正在派件';
+        } else if (status == 3) {
+            return '已签收';
+        } else if (status == 4) {
+            return '派送失败(无法联系到收件人或客户要求择日派送，地址不详或手机号不清)';
+        } else if (status == 5) {
+            return '疑难件(收件人拒绝签收，地址有误或不能送达派送区域，收费等原因无法正常派送)';
+        } else if (status == 6) {
+            return '退件签收';
+        }
     }
     async getMianExpress(orderId, senderInfo, receiverInfo, expressType) {
         // 开始了

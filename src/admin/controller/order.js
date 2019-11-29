@@ -440,7 +440,7 @@ module.exports = class extends Base {
     }
     async getOrderExpressAction() {
         const orderId = this.post('orderId');
-        const latestExpressInfo = await this.model('order_express').getLatestOrderExpress(orderId);
+        const latestExpressInfo = await this.model('order_express').getLatestOrderExpressByAli(orderId);
         return this.success(latestExpressInfo);
     }
     async getPrintTestAction() {
