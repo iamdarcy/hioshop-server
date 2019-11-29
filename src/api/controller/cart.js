@@ -11,63 +11,22 @@ module.exports = class extends Base {
         cartNum = cartNum > 0 ? cartNum : 0;
         return this.success(cartNum);
     }
-    async getFastCart() {
-        const cartList = await this.model('cart').where({
-            user_id: think.userId,
-            is_fast: 1,
-            is_delete: 0
-        }).select();
-        // 获取购物车统计信息
-        let goodsCount = 0;
-        let goodsAmount = 0;
-        let checkedGoodsCount = 0;
-        let checkedGoodsAmount = 0;
-        for (const cartItem of cartList) {
-            goodsCount += cartItem.number;
-            goodsAmount += cartItem.number * cartItem.retail_price;
-            if (!think.isEmpty(cartItem.checked)) {
-                checkedGoodsCount += cartItem.number;
-                checkedGoodsAmount += cartItem.number * Number(cartItem.retail_price);
-            }
-            // 查找商品的图片
-            let info = await this.model('goods').where({
-                id: cartItem.goods_id
-            }).field('list_pic_url,goods_number,goods_unit').find();
-            // cartItem.list_pic_url = await this.model('goods').where({id: cartItem.goods_id}).getField('list_pic_url', true);
-            let num = info.goods_number;
-            if (num <= 0) {
-                await this.model('cart').where({
-                    product_id: cartItem.product_id,
-                    user_id: think.userId,
-                    checked: 1,
-                    is_delete: 0,
-                }).update({
-                    checked: 0
-                });
-            }
-            cartItem.list_pic_url = info.list_pic_url;
-            cartItem.goods_number = info.goods_number;
-            cartItem.weight_count = cartItem.number * Number(cartItem.goods_weight);
+    async getCart(type) {
+        let cartList = [];
+        if(type == 0){
+            cartList = await this.model('cart').where({
+                user_id: think.userId,
+                is_delete: 0,
+                is_fast: 0,
+            }).select();
         }
-        let cAmount = checkedGoodsAmount.toFixed(2);
-        let aAmount = checkedGoodsAmount;
-        return {
-            cartList: cartList,
-            cartTotal: {
-                goodsCount: goodsCount,
-                goodsAmount: goodsAmount.toFixed(2),
-                checkedGoodsCount: checkedGoodsCount,
-                checkedGoodsAmount: cAmount,
-                user_id: think.userId
-            }
-        };
-    }
-    async getCart() {
-        const cartList = await this.model('cart').where({
-            user_id: think.userId,
-            is_delete: 0,
-            is_fast: 0,
-        }).select();
+        else{
+            cartList = await this.model('cart').where({
+                user_id: think.userId,
+                is_delete: 0,
+                is_fast: 1
+            }).select();
+        }
         // 获取购物车统计信息
         let goodsCount = 0;
         let goodsAmount = 0;
@@ -150,7 +109,7 @@ module.exports = class extends Base {
      * @return {Promise} []
      */
     async indexAction() {
-        return this.success(await this.getCart());
+        return this.success(await this.getCart(0));
     }
     async addAgain(goodsId, productId, number) {
         const currentTime = parseInt(new Date().getTime() / 1000);
@@ -297,7 +256,7 @@ module.exports = class extends Base {
                 is_fast: 1
             };
             await this.model('cart').add(cartData);
-            return this.success(await this.getFastCart());
+            return this.success(await this.getCart(1));
         } else {
             if (think.isEmpty(cartInfo)) {
                 // 添加操作
@@ -352,7 +311,7 @@ module.exports = class extends Base {
                     id: cartInfo.id
                 }).increment('number', number);
             }
-            return this.success(await this.getCart());
+            return this.success(await this.getCart(0));
         }
     }
     // 更新指定的购物车信息
@@ -381,7 +340,7 @@ module.exports = class extends Base {
             }).update({
                 number: number
             });
-            return this.success(await this.getCart());
+            return this.success(await this.getCart(0));
         }
     }
     // 是否选择商品，如果已经选择，则取消选择，批量操作
@@ -401,7 +360,7 @@ module.exports = class extends Base {
         }).update({
             checked: parseInt(isChecked)
         });
-        return this.success(await this.getCart());
+        return this.success(await this.getCart(0));
     }
     // 删除选中的购物车商品，批量删除
     async deleteAction() {
@@ -416,12 +375,12 @@ module.exports = class extends Base {
         }).update({
             is_delete: 1
         });
-        return this.success(await this.getCart());
+        return this.success(await this.getCart(0));
         // return this.success(productId);
     }
     // 获取购物车商品的总件件数
     async goodsCountAction() {
-        const cartData = await this.getCart();
+        const cartData = await this.getCart(0);
         await this.model('cart').where({
             user_id: think.userId,
             is_delete: 0,
@@ -453,9 +412,9 @@ module.exports = class extends Base {
         // 获取要购买的商品
         if (type == 0) {
             if (addType == 0) {
-                cartData = await this.getCart();
+                cartData = await this.getCart(0);
             } else if (addType == 1) {
-                cartData = await this.getFastCart();
+                cartData = await this.getCart(1);
             } else if (addType == 2) {
                 cartData = await this.getAgainCart(orderFrom);
             }
