@@ -62,6 +62,9 @@ module.exports = class extends Base {
         if (!think.isEmpty(ex)) {
             return this.fail(400, '重名了')
         }
+        if (user.id == 14) {
+            return this.fail(400, 'admin不能修改!')
+        }
         await this.model('admin').where({
             id: user.id
         }).update(upData);
