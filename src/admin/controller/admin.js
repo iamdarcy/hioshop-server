@@ -8,7 +8,6 @@ module.exports = class extends Base {
      */
     async indexAction() {
         const data = await this.model('admin').where({
-            is_show:1,
             is_delete: 0
         }).select(); 
         for (const item of data) {
