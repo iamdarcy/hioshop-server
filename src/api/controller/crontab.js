@@ -84,7 +84,7 @@ module.exports = class extends Base {
         }
     }
     async resetSqlAction() {
-        let time = parseInt(new Date().getTime() / 1000 + 600);
+        let time = parseInt(new Date().getTime() / 1000 + 300);
         let info = await this.model('settings').where({id:1}).find();
         if(info.reset == 0){
             await this.model('settings').where({id:1}).update({countdown:time,reset:1});
