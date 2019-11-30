@@ -33,7 +33,7 @@ module.exports = class extends Base {
         let password = user.password;
         let upData = {
             username: info.username,
-            password_salt: 'ZHUWEIWEI'
+            password_salt: 'HIOLABS'
         };
         if (password.replace(/(^\s*)|(\s*$)/g, "").length != 0) {
             password = md5(info.password + '' + upData.password_salt);
