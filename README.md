@@ -8,8 +8,8 @@
 微信小程序项目：GitHub: https://github.com/iamdarcy/hioshop-miniprogram  
 管理后台项目：GitHub: https://github.com/iamdarcy/hioshop-admin
 
-阿里云主机：低至3折
-<a target="_blank" href="https://www.aliyun.com/acts/hotsale?userCode=zm04niet">立即去看看</a>
+<a target="_blank" href="https://www.aliyun.com/acts/limit-buy?userCode=zm04niet"><img width="1400" src="http://lucky-other.meiweiyuxian.com/github/aliyun.jpg"/></a>
+阿里云主机：低至2折<a target="_blank" href="https://www.aliyun.com/acts/limit-buy?userCode=zm04niet">立即去看看</a>
 
 ### 本地开发环境配置
 + 克隆项目到本地
