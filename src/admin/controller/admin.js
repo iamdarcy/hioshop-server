@@ -8,8 +8,9 @@ module.exports = class extends Base {
      */
     async indexAction() {
         const data = await this.model('admin').where({
+            is_show: 1,
             is_delete: 0
-        }).select(); 
+        }).select();
         for (const item of data) {
             if (item.last_login_time != 0) {
                 item.last_login_time = moment.unix(item.last_login_time).format('YYYY-MM-DD HH:mm:ss');
