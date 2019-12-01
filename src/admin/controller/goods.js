@@ -616,11 +616,6 @@ module.exports = class extends Base {
                 id: goods_id
             }).update(info);
         }
-        await this.model('goods').where({
-            id: id
-        }).update({
-            has_done: 1
-        });
         return this.success(values);
     }
     async updatePriceAction() {
