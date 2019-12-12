@@ -6159,5 +6159,31 @@ INSERT INTO `hiolabs_specification` VALUES (2, '包装', 2, '');
 INSERT INTO `hiolabs_specification` VALUES (3, '重量', 3, '');
 COMMIT;
 
+-- ----------------------------
+-- Table structure for hiolabs_user
+-- ----------------------------
+DROP TABLE IF EXISTS `hiolabs_user`;
+CREATE TABLE `hiolabs_user` (
+  `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
+  `nickname` varchar(1024) NOT NULL,
+  `name` varchar(60) NOT NULL DEFAULT '',
+  `username` varchar(60) NOT NULL DEFAULT '',
+  `password` varchar(32) NOT NULL DEFAULT '',
+  `gender` tinyint(1) unsigned NOT NULL DEFAULT '0',
+  `birthday` int(11) unsigned NOT NULL DEFAULT '0',
+  `register_time` int(11) unsigned NOT NULL DEFAULT '0',
+  `last_login_time` int(11) unsigned NOT NULL DEFAULT '0',
+  `last_login_ip` varchar(15) NOT NULL DEFAULT '',
+  `mobile` varchar(20) NOT NULL,
+  `register_ip` varchar(45) NOT NULL DEFAULT '',
+  `avatar` varchar(255) NOT NULL DEFAULT '',
+  `weixin_openid` varchar(50) NOT NULL DEFAULT '',
+  `name_mobile` tinyint(1) NOT NULL DEFAULT '0',
+  `country` varchar(255) DEFAULT '0',
+  `province` varchar(100) DEFAULT '0',
+  `city` varchar(100) DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM AUTO_INCREMENT=1047 DEFAULT CHARSET=utf8mb4;
+
 
 SET FOREIGN_KEY_CHECKS = 1;
