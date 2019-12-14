@@ -54,6 +54,13 @@ module.exports = class extends Base {
             productList: await model.getProductList(goodsId),
         });
     }
+    async goodsShareAction() {
+        const goodsId = this.get('id');
+        const info = await this.model('goods').where({
+            id: goodsId
+        }).field('name,retail_price').find();
+        return this.success(info);
+    }
     /**
      * 获取商品列表
      * @returns {Promise.<*>}
