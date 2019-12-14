@@ -541,7 +541,7 @@ CREATE TABLE `hiolabs_goods` (
   `is_index` tinyint(1) DEFAULT '0',
   `is_new` tinyint(1) DEFAULT '0',
   `goods_unit` varchar(45) NOT NULL COMMENT '商品单位',
-  `primary_pic_url` varchar(255) NOT NULL COMMENT '商品主图',
+  `https_pic_url` varchar(255) NOT NULL COMMENT '商品https图',
   `list_pic_url` varchar(255) NOT NULL COMMENT '商品列表图',
   `freight_template_id` int(5) DEFAULT '0',
   `freight_type` tinyint(1) DEFAULT '0',
