@@ -52,7 +52,6 @@ module.exports = class extends Base {
         if(checkPrice > 0){
             return this.fail(400, '价格发生变化，请重新下单');
         }
-        let userId = orderInfo.user_id;
         if (think.isEmpty(orderInfo)) {
             return this.fail(400, '订单已取消');
         }

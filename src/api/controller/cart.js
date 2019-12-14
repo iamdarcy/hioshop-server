@@ -2,15 +2,6 @@ const Base = require('./base.js');
 const moment = require('moment');
 const pinyin = require("pinyin");
 module.exports = class extends Base {
-    async getCartGoodsCountAction() {
-        let userId = think.userId;
-        let cartNum = await this.model('cart').where({
-            user_id: userId,
-            is_delete: 0
-        }).sum('number');
-        cartNum = cartNum > 0 ? cartNum : 0;
-        return this.success(cartNum);
-    }
     async getCart(type) {
         let cartList = [];
         if(type == 0){
@@ -59,7 +50,6 @@ module.exports = class extends Base {
                         checked: 0
                     });
                     cartItem.number = 0;
-                    numberChange = 1;
                 } else if (productNum > 0 && productNum < cartItem.number) {
                     cartItem.number = productNum;
                     numberChange = 1;

@@ -836,58 +836,6 @@ module.exports = class extends Base {
         // TODO 事务，验证订单是否可删除（只有失效的订单才可以删除）
         return this.success();
     }
-    async goodsAction() {
-        const page = this.get('page') || 1;
-        const size = this.get('size') || 50;
-        const name = this.get('name') || '';
-        const model = this.model('goods');
-        const data = await model.where({
-            name: ['like', `%${name}%`],
-            is_delete: 0
-        }).order(['id DESC']).page(page, size).countSelect();
-        // let newData = data;
-        for (const item of data.data) {
-            if (item.is_on_sale == 1) {
-                item.is_on_sale = true;
-            } else {
-                item.is_on_sale = false;
-            }
-            item.orderSum = await this.model('order_record').where({
-                goods_id: item.id,
-                is_fake: 0,
-                is_delete: 0
-            }).count();
-            item.orderFakeSum = await this.model('order_record').where({
-                goods_id: item.id,
-                is_fake: 1,
-                is_delete: 0
-            }).count();
-        }
-        // console.log(data);
-        return this.success(data);
-    }
-    async recordAction() {
-        const model = this.model('order_record');
-        const goods_id = this.post('goods_id');
-        const fake = this.post('fake');
-        let data = [];
-        if (fake == 3) {
-            data = await model.where({
-                goods_id: goods_id,
-                is_delete: 0
-            }).order(['add_time DESC']).select();
-        } else {
-            data = await model.where({
-                goods_id: goods_id,
-                is_fake: fake,
-                is_delete: 0
-            }).order(['add_time DESC']).select();
-        }
-        for (const item of data) {
-            item.add_time = moment.unix(item.add_time).format('YYYY-MM-DD HH:mm:ss');
-        }
-        return this.success(data);
-    }
     async getGoodsSpecificationAction() {
         const goods_id = this.post('goods_id');
         let data = await this.model('goods_specification').where({
@@ -895,22 +843,5 @@ module.exports = class extends Base {
             is_delete: 0
         }).field('id,value').select();
         return this.success(data);
-    }
-    async addOrderRecordAction() {
-        const info = this.post('info');
-        info.add_time = parseInt(new Date(info.add_time).getTime() / 1000);
-        info.specification = info.value;
-        info.is_fake = 1;
-        let id = await this.model('order_record').add(info);
-        return this.success(id);
-    }
-    async deleteOrderRecordAction() {
-        const id = this.post('id');
-        await this.model('order_record').where({
-            id: id
-        }).update({
-            is_delete: 1
-        });
-        return this.success();
     }
 };

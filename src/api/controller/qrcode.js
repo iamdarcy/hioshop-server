@@ -6,7 +6,6 @@ const path = require('path');
 // const mineType = require('mime-types');
 module.exports = class extends Base {
     async getBase64Action() {
-        console.log('=========zheli')
         let goodsId = this.post('goodsId');
         let page = "pages/goods/goods";
         let sceneData = goodsId;

@@ -14,25 +14,14 @@ module.exports = class extends Base {
         const model = this.model('user');
         const data = await model.where({
             nickname: ['like', `%${nickname}%`],
-            is_fake: 0
         }).order(['id DESC']).page(page, size).countSelect();
         for (const item of data.data) {
             item.register_time = moment.unix(item.register_time).format('YYYY-MM-DD HH:mm:ss');
             item.last_login_time = moment.unix(item.last_login_time).format('YYYY-MM-DD HH:mm:ss');
             item.nickname = Buffer.from(item.nickname, 'base64').toString();
         }
-        // const fakeData = await model.where({
-        //     is_fake: 1
-        // }).order(['id DESC']).select();
-        // console.log(fakeData);
-        // for (const item of fakeData) {
-        //     item.register_time = moment.unix(item.register_time).format('YYYY-MM-DD HH:mm:ss');
-        //     item.last_login_time = moment.unix(item.last_login_time).format('YYYY-MM-DD HH:mm:ss');
-        //     item.nickname = Buffer.from(item.nickname, 'base64').toString();
-        // }
         let info = {
             userData: data,
-            // fakeData: fakeData
         }
         return this.success(info);
     }
@@ -288,132 +277,6 @@ module.exports = class extends Base {
             id: id
         }).limit(1).delete();
         // TODO 删除图片
-        return this.success();
-    }
-    async masterAction() {
-        const page = this.get('page') || 1;
-        const size = this.get('size') || 10;
-        const model = this.model('master');
-        const data = await model.where({
-            is_delete: 0
-        }).order(['id DESC']).page(page, size).countSelect();
-        // for (const item of data.data) {
-        //     item.register_time = moment.unix(item.register_time).format('YYYY-MM-DD HH:mm:ss');
-        //     item.last_login_time = moment.unix(item.last_login_time).format('YYYY-MM-DD HH:mm:ss');
-        // }
-        // const fakeData = await model.where({mobile:1}).order(['id DESC']).select();
-        for (const item of data.data) {
-            console.log(item.user_id);
-            let userInfo = await this.model('user').where({
-                id: item.user_id
-            }).find();
-            item.user_name = Buffer.from(userInfo.nickname, 'base64').toString();
-            item.avatar = userInfo.avatar;
-            if (item.level == 1) {
-                item.levelName = "青铜"
-            }
-            if (item.level == 2) {
-                item.levelName = "白银"
-            }
-            if (item.level == 3) {
-                item.levelName = "黄金"
-            }
-            if (item.level == 4) {
-                item.levelName = "铂金"
-            }
-            if (item.level == 5) {
-                item.levelName = "钻石"
-            }
-        }
-        // let info = {
-        //     userData: data,
-        //     // fakeData:fakeData
-        // }
-        return this.success(data);
-    }
-    async masterInfoAction() {
-        const id = this.get('id');
-        const model = this.model('master');
-        let master = await model.where({
-            id: id
-        }).find();
-        let masterUserId = master.user_id
-        let userInfo = await this.model('user').where({
-            id: masterUserId
-        }).find();
-        let data = await model.where({
-            id: id
-        }).find();
-        data.user_name = Buffer.from(userInfo.nickname, 'base64').toString();
-        if (master.level == 1) {
-            data.levelName = "青铜"
-        }
-        if (master.level == 2) {
-            data.levelName = "白银"
-        }
-        if (master.level == 3) {
-            data.levelName = "黄金"
-        }
-        if (master.level == 4) {
-            data.levelName = "铂金"
-        }
-        if (master.level == 5) {
-            data.levelName = "钻石"
-        }
-        return this.success(data);
-    }
-    async masterSaveAction() {
-        if (!this.isPost) {
-            return false;
-        }
-        const values = this.post();
-        const id = this.post('id');
-        let user_id = values.user_id;
-        let info = this.model('user').where({
-            user_id: user_id
-        }).find();
-        if (!think.isEmpty(info)) {
-            return this.fail();
-        }
-        const model = this.model('master');
-        if (id > 0) {
-            await model.where({
-                id: id
-            }).update(values);
-        } else {
-            delete values.id;
-            await model.add(values);
-        }
-        return this.success(values);
-    }
-    async deleteMasterAction() {
-        const id = this.post('id');
-        await this.model('master').where({
-            id: id
-        }).limit(1).update({
-            is_delete: 1
-        });
-        // TODO 删除图片
-        return this.success();
-    }
-    async fakeuserAction() {
-        const values = this.post();
-        const startid = values.startid;
-        const endid = values.endid;
-        console.log(startid);
-        console.log(endid);
-        const currentTime = parseInt(new Date().getTime() / 1000);
-        for (let i = startid; i < endid; i++) {
-            let data = {
-                register_time: currentTime,
-                last_login_time: currentTime,
-                avatar: 'http://ravtava.meiweiyuxian.com/' + i + '.jpg',
-                username: i,
-                mobile: 0,
-                is_fake: 1
-            }
-            await this.model('user').add(data);
-        }
         return this.success();
     }
 };

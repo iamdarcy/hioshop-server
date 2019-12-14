@@ -5,7 +5,7 @@ module.exports = class extends Base {
     async indexAction() {
         const goodsOnsale = await this.model('goods').where({is_on_sale: 1,is_delete:0}).count();
         const orderToDelivery = await this.model('order').where({order_status: 300}).count();
-        const user = await this.model('user').where({is_fake: 0}).count();
+        const user = await this.model('user').count();
         let data = await this.model('settings').field('countdown').find();
         let timestamp = data.countdown;
         let info = {
