@@ -75,7 +75,7 @@ npm start
 请参考微信小程序项目：https://github.com/iamdarcy/hioshop-miniprogram
 
 ### 最近更新 
-- 新增生成分享图的功能
+- 新增生成分享图的功能  
 在src/common/config/config.js需要设置好已经开通https的七牛bucket的参数
 <img width="1000" src="http://lucky-other.meiweiyuxian.com/github/save-local.jpg"/>
 
