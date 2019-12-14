@@ -40,7 +40,7 @@ module.exports = {
 };
 ```
 
-+ 填写微信登录和微信支付配置
++ 填写微信登录和微信支付配置和其他设置，比如七牛，阿里云快递等等
 
 src/common/config/config.js
 ```
@@ -76,6 +76,7 @@ npm start
 
 ### 最近更新 
 - 新增生成分享图的功能
+在src/common/config/config.js需要设置好已经开通https的七牛bucket的参数
 <img width="1000" src="http://lucky-other.meiweiyuxian.com/github/save-local.jpg"/>
 
 - 项目地址  
