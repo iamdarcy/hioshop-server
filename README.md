@@ -74,6 +74,10 @@ npm start
 ### 项目截图
 请参考微信小程序项目：https://github.com/iamdarcy/hioshop-miniprogram
 
+### 最近更新 
+- 新增生成分享图的功能
+<img width="1000" src="http://lucky-other.meiweiyuxian.com/github/save-local.jpg"/>
+
 - 项目地址  
 服务端： https://github.com/iamdarcy/hioshop-server  
 后台管理：https://github.com/iamdarcy/hioshop-admin  
