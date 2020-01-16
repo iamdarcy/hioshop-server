@@ -39,10 +39,10 @@ CREATE TABLE `hiolabs_ad` (
 -- Records of hiolabs_ad
 -- ----------------------------
 BEGIN;
-INSERT INTO `hiolabs_ad` VALUES (28, 0, '', 1109004, 'http://yanxuan.nosdn.127.net/ed50cbf7fab10b35f676e2451e112130.jpg', 1577807999, 1, 3, 0);
-INSERT INTO `hiolabs_ad` VALUES (30, 0, '', 1109034, 'http://yanxuan.nosdn.127.net/0251bd141f5b55bd4311678750a6b344.jpg', 1577807999, 1, 1, 0);
-INSERT INTO `hiolabs_ad` VALUES (31, 0, '', 1130039, 'http://yanxuan.nosdn.127.net/19b1375334f2e19130a3ba0e993d7e91.jpg', 1577807999, 1, 2, 0);
-INSERT INTO `hiolabs_ad` VALUES (32, 0, '', 1064003, 'http://yanxuan.nosdn.127.net/b2de2ebcee090213861612909374f9f8.jpg', 1577807999, 1, 3, 0);
+INSERT INTO `hiolabs_ad` VALUES (28, 0, '', 1109004, 'http://yanxuan.nosdn.127.net/ed50cbf7fab10b35f676e2451e112130.jpg', 1894780212, 1, 3, 0);
+INSERT INTO `hiolabs_ad` VALUES (30, 0, '', 1109034, 'http://yanxuan.nosdn.127.net/0251bd141f5b55bd4311678750a6b344.jpg', 1894780212, 1, 1, 0);
+INSERT INTO `hiolabs_ad` VALUES (31, 0, '', 1130039, 'http://yanxuan.nosdn.127.net/19b1375334f2e19130a3ba0e993d7e91.jpg', 1894780212, 1, 2, 0);
+INSERT INTO `hiolabs_ad` VALUES (32, 0, '', 1064003, 'http://yanxuan.nosdn.127.net/b2de2ebcee090213861612909374f9f8.jpg', 1894780212, 1, 3, 0);
 COMMIT;
 
 -- ----------------------------
