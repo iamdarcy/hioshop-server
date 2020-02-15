@@ -1,6 +1,6 @@
 {
-  "name": "nideshop",
-  "description": "nideshop - open source mini program shop",
+  "name": "hioshop",
+  "description": "hioshop - open source mini program shop",
   "version": "1.0.0",
   "scripts": {
     "start": "node development.js",
