@@ -4,6 +4,9 @@
 + 测试数据来自上述开源项目
 + 服务端api基于Ｎode.js+ThinkJS+MySQL
 
+### 视频教程
+https://www.bilibili.com/video/av89567916
+
 ### 本项目需要配合  
 微信小程序项目：GitHub: https://github.com/iamdarcy/hioshop-miniprogram  
 管理后台项目：GitHub: https://github.com/iamdarcy/hioshop-admin
