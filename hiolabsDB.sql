@@ -524,7 +524,7 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `hiolabs_goods`;
 CREATE TABLE `hiolabs_goods` (
-  `id` int(11) unsigned NOT NULL,
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `category_id` int(11) unsigned NOT NULL DEFAULT '0',
   `is_on_sale` tinyint(1) unsigned NOT NULL DEFAULT '1',
   `name` varchar(120) NOT NULL DEFAULT '',
