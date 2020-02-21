@@ -58,7 +58,8 @@ module.exports = class extends Base {
             }).update(values);
         } else {
             let ex = await model.where({
-                goods_id: values.goods_id
+                goods_id: values.goods_id,
+                is_delete:0
             }).find();
             if (think.isEmpty(ex)) {
                 delete values.id;
