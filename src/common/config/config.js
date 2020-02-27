@@ -24,8 +24,15 @@ module.exports = {
     qiniu: {
         access_key: 'asdlakjsdlajlajsdlas',      // 在七牛密钥管理中获取
         secret_key: 'alskdjalksjdlasjdlajsd',    // 在七牛密钥管理中获取
-        bucket: 'bucketname',                    // bucket的名称
-        domain: 'domain'                         // 自己的domain域名
+        bucket: 'bucketname',                    // 请填自己的bucket的名称
+        domain: 'domain/'                         // 请填自己的domain域名
+    },
+    // 在七牛新建一个https的空间，这个是用来存储分享图片的https图片
+    qiniuHttps: {
+        access_key: 'asdlakjsdlajlajsdlasasdla', // 在七牛密钥管理中获取
+        secret_key: 'aaaaaaaaaaasdasdasdasd', // 在七牛密钥管理中获取
+        bucket: 'bucketname', // 自己设置的
+        domain: 'domain/' // 自己设置
     },
     aliexpress:{
         url:'http://wuliu.market.alicloudapi.com/kdi', //阿里云的短信api，收费的
