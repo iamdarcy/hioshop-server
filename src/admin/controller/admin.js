@@ -63,7 +63,7 @@ module.exports = class extends Base {
             return this.fail(400, '重名了')
         }
         if (user.id == 14) {
-            return this.fail(400, 'admin不能修改!')
+            return this.fail(400, '演示版后台的管理员密码不能修改!本地开发，删除这个判断')
         }
         await this.model('admin').where({
             id: user.id

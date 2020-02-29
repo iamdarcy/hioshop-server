@@ -130,7 +130,6 @@ module.exports = class extends Base {
         const model = this.model('goods');
         const data = await model.where({
             is_delete: 0,
-            has_gallery: 1,
             is_on_sale: 1
         }).order(['sort_order asc']).page(page, size).countSelect();
         for (const item of data.data) {
@@ -173,7 +172,6 @@ module.exports = class extends Base {
         const size = this.get('size') || 50;
         const model = this.model('goods');
         const data = await model.where({
-            has_gallery: 1,
             is_delete: 0,
             goods_number: ['<=', 0]
         }).order(['sort_order asc']).page(page, size).countSelect();
@@ -213,7 +211,6 @@ module.exports = class extends Base {
         const size = this.get('size') || 50;
         const model = this.model('goods');
         const data = await model.where({
-            has_gallery: 1,
             is_delete: 0,
             is_on_sale: 0
         }).order(['id DESC']).page(page, size).countSelect();
