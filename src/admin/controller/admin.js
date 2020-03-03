@@ -62,9 +62,9 @@ module.exports = class extends Base {
         if (!think.isEmpty(ex)) {
             return this.fail(400, '重名了')
         }
-        if (user.id == 14) {
-            return this.fail(400, '演示版后台的管理员密码不能修改!本地开发，删除这个判断')
-        }
+        // if (user.id == 14) {
+        //     return this.fail(400, '演示版后台的管理员密码不能修改!本地开发，删除这个判断')
+        // }
         await this.model('admin').where({
             id: user.id
         }).update(upData);
