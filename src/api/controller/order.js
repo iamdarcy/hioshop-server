@@ -16,7 +16,7 @@ module.exports = class extends Base {
         status = await this.model('order').getOrderStatus(showType);
         let is_delete = 0;
         // const orderList = await this.model('order').where({ user_id: think.userId }).page(1, 10).order('add_time DESC').countSelect();
-        const orderList = await this.model('order').field('id,add_time,actual_price,freight_price').where({
+        const orderList = await this.model('order').field('id,add_time,actual_price,freight_price,offline_pay').where({
             user_id: think.userId,
             is_delete: is_delete,
             order_type: ['<', 7],
@@ -294,6 +294,7 @@ module.exports = class extends Base {
         // 获取收货地址信息和计算运费
         const addressId = this.post('addressId');
         const freightPrice = this.post('freightPrice');
+        const offlinePay = this.post('offlinePay');
         let postscript = this.post('postscript');
         const buffer = Buffer.from(postscript); // 留言
         const checkedAddress = await this.model('address').where({
@@ -376,6 +377,7 @@ module.exports = class extends Base {
             actual_price: actualPrice,
             change_price: actualPrice,
             print_info: print_info,
+            offline_pay:offlinePay
         };
         // 开启事务，插入订单信息和订单商品
         const orderId = await this.model('order').add(orderInfo);
