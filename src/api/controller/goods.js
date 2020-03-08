@@ -46,12 +46,13 @@ module.exports = class extends Base {
                 goodsNumber = goodsNumber + item.goods_number;
             }
         }
+        let specificationList = await model.getSpecificationList(goodsId);
         info.goods_number = goodsNumber;
         return this.success({
             info: info,
             gallery: gallery,
-            specificationList: await model.getSpecificationList(goodsId),
-            productList: await model.getProductList(goodsId),
+            specificationList: specificationList,
+            productList: productList
         });
     }
     async goodsShareAction() {

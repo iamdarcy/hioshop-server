@@ -82,7 +82,7 @@ module.exports = class extends Base {
             id: goodsId
         }).find();
         delete data.id;
-        delete data.is_on_sale;
+        data.is_on_sale = 0;
         let insertId = await this.model('goods').add(data);
         let goodsGallery = await this.model('goods_gallery').where({
             goods_id: goodsId,
