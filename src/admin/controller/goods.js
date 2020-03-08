@@ -592,8 +592,14 @@ module.exports = class extends Base {
             }).getField('cost');
             let maxCost = Math.max(...cost);
             let minCost = Math.min(...cost);
-            let goodsPrice = minPrice + '-' + maxPrice;
-            let costPrice = minCost + '-' + maxCost;
+            let goodsPrice = '';
+            if(minPrice == maxPrice){
+                goodsPrice = minPrice;
+            }
+            else{
+                goodsPrice = minPrice + '~' + maxPrice;
+            }
+            let costPrice = minCost + '~' + maxCost;
             await this.model('goods').where({
                 id: goods_id
             }).update({
@@ -663,8 +669,14 @@ module.exports = class extends Base {
             }).getField('cost');
             let maxCost = Math.max(...cost);
             let minCost = Math.min(...cost);
-            let goodsPrice = minPrice + '-' + maxPrice;
-            let costPrice = minCost + '-' + maxCost;
+            let goodsPrice = '';
+            if(minPrice == maxPrice){
+                goodsPrice = minPrice;
+            }
+            else{
+                goodsPrice = minPrice + '~' + maxPrice;
+            }
+            let costPrice = minCost + '~' + maxCost;
             await this.model('goods').where({
                 id: goods_id
             }).update({
