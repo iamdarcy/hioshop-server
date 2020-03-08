@@ -209,11 +209,6 @@ module.exports = class extends Base {
         let data = await model.where({
             id: id
         }).update(info);
-        let jushuitanConfig = think.config('jushuitan');
-        let url = jushuitanConfig.url;
-        let partnerid = jushuitanConfig.partnerid;
-        let partnerkey = jushuitanConfig.partnerkey;
-        let token = jushuitanConfig.token;
         let orderInfo = await this.model('order').where({
             id: id
         }).find();
