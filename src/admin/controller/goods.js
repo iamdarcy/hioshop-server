@@ -857,8 +857,23 @@ module.exports = class extends Base {
         let domain = think.config('qiniuHttps.domain');
         var mac = new qiniu.auth.digest.Mac(accessKey, secretKey);
         var config = new qiniu.conf.Config();
-        let zoneNum = 'Zone_z' + think.config('qiniuHttps.zoneNum');
-        config.zone = qiniu.zone.zoneNum;
+        let zoneNum = think.config('qiniuHttps.zoneNum');
+        if(zoneNum == 0){
+            config.zone = qiniu.zone.Zone_z0;
+        }
+        else if(zoneNum == 1){
+            config.zone = qiniu.zone.Zone_z1;
+        }
+        else if(zoneNum == 2){
+            config.zone = qiniu.zone.Zone_z2;
+        }
+        else if(zoneNum == 3){
+            config.zone = qiniu.zone.Zone_na0;
+        }
+
+        else if(zoneNum == 4){
+            config.zone = qiniu.zone.Zone_as0;
+        }
         var bucketManager = new qiniu.rs.BucketManager(mac, config);
         let bucket = think.config('qiniuHttps.bucket');
         let key = think.uuid(32);
