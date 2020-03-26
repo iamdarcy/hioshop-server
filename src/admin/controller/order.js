@@ -609,28 +609,36 @@ module.exports = class extends Base {
         // 支付时间
         let shippingTime = moment.unix(currentTime).format('YYYY-MM-DD HH:mm:ss');
         // 订单金额
-        // 温馨提示
-        let info = {
-            keyword1: {
-                value: goodsName,
-            },
-            keyword2: {
-                value: express.logistic_code, // 订单号码
-            },
-            keyword3: {
-                value: express.shipper_name,
-            },
-            keyword4: {
-                value: shippingTime,
-            },
-            keyword5: {
-                value: '收到后请放冰箱！',
-            },
-        };
+		// 订阅消息 请先在微信小程序的官方后台设置好订阅消息模板，然后根据自己的data的字段信息，设置好data
+        let TEMPLATE_ID = 'w6AMCJ0FI2LqjCjWPIrpnVWTsFgnlNlmCf9TTDmG6_U'
+        let message = {
+            "touser": openId,
+            "template_id": TEMPLATE_ID,
+            "page": '/pages/ucenter/index/index',
+            "miniprogram_state":"formal",
+            "lang":"zh_CN",
+            "data": {
+              "thing7": {
+                  "value": goodsName
+              },
+              "date2": {
+                  "value": shippingTime
+              },
+              "name3": {
+                  "value": express.shipper_name
+              },
+              "character_string4": {
+                  "value": express.logistic_code
+              } ,
+              "thing9": {
+                  "value": '签收前请检查包裹！'
+              }
+          }
+        }
         const tokenServer = think.service('weixin', 'api');
         const token = await tokenServer.getAccessToken();
-        const res = await tokenServer.sendMessage(token, openId, formId, info);
-        return this.success(data);
+        const res = await tokenServer.sendMessage(token,message);
+        return this.success();
     }
     async goPrintOnlyAction() {
         let orderId = this.post('order_id');
@@ -733,28 +741,35 @@ module.exports = class extends Base {
         // 支付时间
         let shippingTime = moment.unix(currentTime).format('YYYY-MM-DD HH:mm:ss');
         // 订单金额
-        // 温馨提示
-        let data = {
-            keyword1: {
-                value: goodsName,
-            },
-            keyword2: {
-                value: logistic_code, // 订单号码
-            },
-            keyword3: {
-                value: expressName,
-            },
-            keyword4: {
-                value: shippingTime,
-            },
-            keyword5: {
-                value: '收到后请放冰箱！',
-            },
-        };
+		// 订阅消息 请先在微信小程序的官方后台设置好订阅消息模板，然后根据自己的data的字段信息，设置好data
+        let TEMPLATE_ID = 'w6AMCJ0FI2LqjCjWPIrpnVWTsFgnlNlmCf9TTDmG6_U'
+        let message = {
+            "touser": openId,
+            "template_id": TEMPLATE_ID,
+            "page": '/pages/ucenter/index/index',
+            "miniprogram_state":"formal",
+            "lang":"zh_CN",
+            "data": {
+              "thing7": {
+                  "value": goodsName
+              },
+              "date2": {
+                  "value": shippingTime
+              },
+              "name3": {
+                  "value": expressName
+              },
+              "character_string4": {
+                  "value": logistic_code
+              } ,
+              "thing9": {
+                  "value": '签收前请检查包裹！'
+              }
+          }
+        }
         const tokenServer = think.service('weixin', 'api');
-        console.log(tokenServer)
         const token = await tokenServer.getAccessToken();
-        const res = await tokenServer.sendMessage(token, openId, formId, data);
+        const res = await tokenServer.sendMessage(token,message);
     }
     async checkExpressAction() {
         const id = this.get('orderId');

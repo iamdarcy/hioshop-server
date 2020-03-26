@@ -78,22 +78,4 @@ module.exports = class extends think.Service {
         let token = sessionData.access_token;
         return token;
     }
-
-    async sendMessage(token, openId, formId, data) {
-        const sendInfo = {
-            method: 'POST',
-            url: 'https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token=' + token,
-            body: {
-                touser: openId,
-                template_id: 'COiQGBTzTtz_us5qYeJf0K-pFAyubBuWQh40sV1eAuw',
-                page: '/pages/ucenter/order-list/index',
-                form_id: formId,
-                data: data
-            },
-            json: true
-        };
-
-        let posting = await rp(sendInfo);
-    }
-
 };

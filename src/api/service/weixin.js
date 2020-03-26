@@ -108,58 +108,7 @@ module.exports = class extends think.Service {
             }).update(data);
         }
     }
-    async sendMessageInfo(formId, openId, template_id, order_sn) {
-        let page = '/pages/ucenter/order-list/index';
-        let order = await this.model('order').where({
-            order_sn: order_sn
-        }).field('id,pay_time,actual_price').find();
-        let goodsInfo = await this.model('order_goods').where({
-            order_id: order.id
-        }).field('goods_name').select();
-        // 物品名称
-        let goodsName = '';
-        if (goodsInfo.length == 1) {
-            goodsName = goodsInfo[0].goods_name
-        } else {
-            goodsName = goodsInfo[0].goods_name + '等' + goodsInfo.length + '件商品'
-        }
-        // 支付时间
-        let payTime = moment.unix(order.pay_time).format('YYYY-MM-DD HH:mm:ss');
-        // 订单金额
-        let money = order.actual_price
-        // 温馨提示
-        let data = {
-            keyword1: {
-                value: goodsName,
-            },
-            keyword2: {
-                value: order_sn, // 订单号码
-            },
-            keyword3: {
-                value: payTime,
-            },
-            keyword4: {
-                value: money,
-            },
-            keyword5: {
-                value: '您的商品很快就飞奔到您手上啦！',
-            },
-        }
-        const token = await this.getAccessToken();
-        const sendInfo = {
-            method: 'POST',
-            url: 'https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token=' + token,
-            body: {
-                touser: openId,
-                template_id: template_id,
-                page: page,
-                form_id: formId,
-                data: data
-            },
-            json: true
-        };
-        let posting = await rp(sendInfo);
-    }
+    
     /**
      * 生成排序后的支付参数 query
      * @param queryObj
@@ -286,20 +235,15 @@ module.exports = class extends think.Service {
             return true;
         }
     }
-    async sendMessage(token, openId, formId, data) {
+    async sendMessage(token, data) {
         const sendInfo = {
             method: 'POST',
-            url: 'https://api.weixin.qq.com/cgi-bin/message/wxopen/template/send?access_token=' + token,
-            body: {
-                touser: openId,
-                template_id: 'qpYW_mtRIibDA_i7RY-mGFzRLWgbPaYsNwcQv7BWXCA',
-                page: '/pages/ucenter/index/index',
-                form_id: formId,
-                data: data
-            },
+            url: 'https://api.weixin.qq.com/cgi-bin/message/subscribe/send?access_token=' + token,
+            body: data,
             json: true
         };
         let posting = await rp(sendInfo);
+        console.log(posting);
         return posting;
     }
     async getMessageATempId(type) {

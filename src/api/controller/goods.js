@@ -31,9 +31,13 @@ module.exports = class extends Base {
     async detailAction() {
         const goodsId = this.get('id');
         const model = this.model('goods');
-        const info = await model.where({
-            'id': goodsId
+        let info = await model.where({
+            id: goodsId,
+			is_delete:0
         }).find();
+		if(think.isEmpty(info)){
+			return this.fail('该商品不存在或已下架');
+		}
         const gallery = await this.model('goods_gallery').where({
             goods_id: goodsId,
             is_delete: 0,

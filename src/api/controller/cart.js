@@ -439,12 +439,14 @@ module.exports = class extends Base {
         if (addressId == '' || addressId == 0) {
             checkedAddress = await this.model('address').where({
                 is_default: 1,
-                user_id: think.userId
+                user_id: think.userId,
+				is_delete:0
             }).find();
         } else {
             checkedAddress = await this.model('address').where({
                 id: addressId,
-                user_id: think.userId
+                user_id: think.userId,
+				is_delete:0
             }).find();
         }
         if (!think.isEmpty(checkedAddress)) {
@@ -568,7 +570,8 @@ module.exports = class extends Base {
                         }
                     }
                 }
-                freightPrice = freightPrice + freight_price;
+				freightPrice = freightPrice > freight_price?freightPrice:freight_price
+                // freightPrice = freightPrice + freight_price;
                 // 会得到 几个数组，然后用省id去遍历在哪个数组
             }
         } else {
