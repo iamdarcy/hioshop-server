@@ -14,7 +14,7 @@ https://www.bilibili.com/video/av89567916
 微信小程序项目：GitHub: https://github.com/iamdarcy/hioshop-miniprogram  
 管理后台项目：GitHub: https://github.com/iamdarcy/hioshop-admin
 
-<a target="_blank" href="https://www.aliyun.com/minisite/goods?userCode=zm04niet"><img width="1400" src="http://git.hiolabs.com/github/aliyun.jpg"/></a>
+<a target="_blank" href="https://www.aliyun.com/minisite/goods?userCode=zm04niet"><img width="1400" src="http://git.hiolabs.com/aliyun.jpg"/></a>
 阿里云主机：低至2折<a target="_blank" href="https://www.aliyun.com/minisite/goods?userCode=zm04niet">立即去看看</a>
 
 ### 本地开发环境配置
