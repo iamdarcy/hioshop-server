@@ -10,7 +10,7 @@ module.exports = class extends Base {
      */
     async indexAction() {
         const page = this.get('page') || 1;
-        const size = this.get('size') || 50;
+        const size = this.get('size') || 20;
         const name = this.get('name') || '';
         const model = this.model('goods');
         const data = await model.where({
@@ -383,6 +383,13 @@ module.exports = class extends Base {
         }).update({
             is_on_sale: status
         });
+		// 4.14更新
+		await this.model('cart').where({
+			product_id: id,
+			is_delete: 0
+		}).update({
+			is_on_sale: status
+		})
     }
     async indexShowStatusAction() {
         const id = this.get('id');

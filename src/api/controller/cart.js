@@ -40,7 +40,8 @@ module.exports = class extends Base {
             } else {
                 let retail_price = product.retail_price;
                 let productNum = product.goods_number;
-                if (productNum <= 0) {
+				// 4.14 更新
+                if (productNum <= 0 || product.is_on_sale == 0) {
                     await this.model('cart').where({
                         product_id: cartItem.product_id,
                         user_id: think.userId,
@@ -415,10 +416,7 @@ module.exports = class extends Base {
         for (const item of checkedGoodsList) {
             goodsCount = goodsCount + item.number;
             goodsMoney = goodsMoney + item.number * item.retail_price;
-            let product = await this.model('product').where({
-                id: item.product_id
-            }).find();
-            if (product.goods_number <= 0 || product.is_on_sale == 0) {
+            if (item.goods_number <= 0 || item.is_on_sale == 0) {
                 outStock = Number(outStock) + 1;
             }
         }
