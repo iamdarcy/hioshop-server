@@ -113,7 +113,7 @@ module.exports = class extends think.Model {
         if (orderInfo.order_status === 102 || orderInfo.order_status === 103) {
             textCode.close = true;
         }
-        if (orderInfo.order_status === 201) {
+        if (orderInfo.order_status === 201 || orderInfo.order_status === 300) {
             textCode.delivery = true;
         }
         if (orderInfo.order_status === 301) {

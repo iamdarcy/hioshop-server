@@ -7,7 +7,7 @@ module.exports = class extends Base {
      * 获取支付的请求参数
      * @returns {Promise<PreventPromise|void|Promise>}
      */
-    // 测试时付款，将真实接口注释。
+    // 测试时付款，将真实接口注释。 在小程序的services/pay.js中按照提示注释和打开
     async preWeixinPayaAction() {
         const orderId = this.get('orderId');
         const orderInfo = await this.model('order').where({
@@ -15,12 +15,13 @@ module.exports = class extends Base {
         }).find();
         let userId = orderInfo.user_id;
         let result = {
-            transaction_id: 1,
-            time_end: 1,
+        	transaction_id: 123123123123,
+        	time_end: parseInt(new Date().getTime() / 1000),
         }
         const orderModel = this.model('order');
         await orderModel.updatePayData(orderInfo.id, result);
         this.afterPay(orderInfo);
+		return this.success();
     }
     // 真实的付款接口
     async preWeixinPayAction() {
