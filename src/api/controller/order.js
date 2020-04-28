@@ -467,9 +467,10 @@ module.exports = class extends Base {
             let expressNo = expressInfo.logistic_code;
             let code = shipperCode.substring(0, 2);
             let shipperName = '';
+			let sfLastNo = think.config('aliexpress.sfLastNo');
             if (code == "SF") {
                 shipperName = "SFEXPRESS";
-                expressNo = expressNo + ':0580';
+                expressNo = expressNo + ':'+ sfLastNo;
             } else {
                 shipperName = shipperCode;
             }
@@ -498,13 +499,13 @@ module.exports = class extends Base {
         // return this.success(latestExpressInfo);
     }
     async getExpressInfo(shipperName, expressNo) {
+		let appCode = "APPCODE "+ think.config('aliexpress.appcode');
         const options = {
             method: 'GET',
             url: 'http://wuliu.market.alicloudapi.com/kdi?no=' + expressNo + '&type=' + shipperName,
             headers: {
                 "Content-Type": "application/json; charset=utf-8",
-                // "Authorization": "APPCODE f85be5270caf40c7a784ce3682fc4c8e"
-                "Authorization": "APPCODE 9d78e3dcbc7c48ef9d0e6e7b1bac46b8"
+                "Authorization": appCode
             }
         };
         let sessionData = await rp(options);
@@ -527,17 +528,5 @@ module.exports = class extends Base {
         } else if (status == 6) {
             return '退件签收';
         }
-    }
-    async getExpressInfoAction() {
-        const options = {
-            method: 'GET',
-            url: 'http://wuliu.market.alicloudapi.com/kdi?no=235078392411:0580&type=SFEXPRESS',
-            headers: {
-                "Content-Type": "application/json; charset=utf-8",
-                "Authorization": "APPCODE 9d78e3dcbc7c48ef9d0e6e7b1bac46b8"
-            }
-        };
-        let sessionData = await rp(options);
-        sessionData = JSON.parse(sessionData);
     }
 };

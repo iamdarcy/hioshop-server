@@ -85,7 +85,6 @@ module.exports = class extends think.Model {
         // 如果is_finish == 1；或者 updateTime 小于 10分钟，
         let updateTime = info.update_time;
         let com = (currentTime - updateTime) / 60;
-        console.log(com);
         let is_finish = info.is_finish;
         if (is_finish == 1) {
             console.log('--1');
@@ -100,9 +99,10 @@ module.exports = class extends think.Model {
             let expressNo = expressInfo.logistic_code;
             let code = shipperCode.substring(0, 2);
             let shipperName = '';
+			let sfLastNo = think.config('aliexpress.sfLastNo');
             if (code == "SF") {
                 shipperName = "SFEXPRESS";
-                expressNo = expressNo + ':0580'; // 这个要根据自己的寄件时的手机末四位
+                expressNo = expressNo + ':'+sfLastNo; // 这个要根据自己的寄件时的手机末四位
             } else {
                 shipperName = shipperCode;
             }
@@ -136,13 +136,13 @@ module.exports = class extends think.Model {
     }
     async getExpressInfo(shipperName, expressNo) {
         console.log('出发1111111');
+		let appCode = "APPCODE "+ think.config('aliexpress.appcode');
         const options = {
             method: 'GET',
             url: 'http://wuliu.market.alicloudapi.com/kdi?no=' + expressNo + '&type=' + shipperName,
             headers: {
                 "Content-Type": "application/json; charset=utf-8",
-                // "Authorization": "APPCODE f85be5270caf40c7a784ce3682fc4c8e"
-                "Authorization": "APPCODE 9d78e3dcbc7c48ef9d0e6e7b1bac46b8"
+                "Authorization": appCode
             }
         };
         let sessionData = await rp(options);

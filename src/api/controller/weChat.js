@@ -55,7 +55,7 @@ module.exports = class extends Base {
         // console.log("data: ", JSON.stringify(data));
         const tokenServer = think.service('weixin', 'api');
         const token = await tokenServer.getAccessToken();
-        console.log(token);
+        // console.log(token);
         switch (data.MsgType) {
             case 'text':
                 { //用户在客服会话中发送文本消息
