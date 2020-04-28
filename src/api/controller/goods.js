@@ -7,24 +7,6 @@ module.exports = class extends Base {
         return this.success(goodsList);
     }
     /**
-     * 获取sku信息，用于购物车编辑时选择规格
-     * @returns {Promise.<Promise|PreventPromise|void>}
-     */
-    async saveUserIdAction() {
-        const formId = this.post('formId');
-        let user = await this.model('user').where({
-            id: think.userId
-        }).find();
-        const currentTime = parseInt(new Date().getTime() / 1000);
-        let data = {
-            form_id: formId,
-            order_id: 0,
-            user_id: think.userId,
-            add_time: currentTime,
-        }
-        await this.model('formid').add(data);
-    }
-    /**
      * 商品详情页数据
      * @returns {Promise.<Promise|PreventPromise|void>}
      */

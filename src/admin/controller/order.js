@@ -580,10 +580,7 @@ module.exports = class extends Base {
         let orderInfo = await this.model('order').where({
             id: orderId
         }).field('user_id').find();
-        let formInfo = await this.model('formid').where({
-            order_id: orderId
-        }).find();
-        let formId = formInfo.form_id;
+     
         let user = await this.model('user').where({
             id: orderInfo.user_id
         }).find();
@@ -715,10 +712,6 @@ module.exports = class extends Base {
         let orderInfo = await this.model('order').where({
             id: orderId
         }).field('user_id').find();
-        let formInfo = await this.model('formid').where({
-            order_id: orderId
-        }).find();
-        let formId = formInfo.form_id;
         let user = await this.model('user').where({
             id: orderInfo.user_id
         }).find();

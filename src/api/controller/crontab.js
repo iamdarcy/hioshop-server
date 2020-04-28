@@ -9,10 +9,6 @@ module.exports = class extends Base {
         let newday = new Date(new Date().setHours(3, 0, 0, 0)) / 1000;
         let newday_over = new Date(new Date().setHours(3, 0, 59, 0)) / 1000;
         if (currentTime > newday && currentTime < newday_over) {
-            console.log('一天结束了');
-            await this.model('formid').where({
-                user_id: 0
-            }).delete();
         }
         // 将公告下掉
         let notice = await this.model('notice').where({

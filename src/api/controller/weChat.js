@@ -78,7 +78,6 @@ module.exports = class extends Base {
                     break;
                 }
         }
-        // const res = await tokenServer.sendMessage(token,openId,formId,info);
         //  https://www.jianshu.com/p/3d59ae5e69ab
     }
 };

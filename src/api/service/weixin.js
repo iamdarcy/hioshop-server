@@ -69,9 +69,7 @@ module.exports = class extends think.Service {
                     };
                     const paramStr = `appId=${returnParams.appid}&nonceStr=${returnParams.nonceStr}&package=${returnParams.package}&signType=${returnParams.signType}&timeStamp=${returnParams.timeStamp}&key=` + think.config('weixin.partner_key');
                     returnParams.paySign = md5(paramStr).toUpperCase();
-                    let formId = res.prepay_id;
                     let order_sn = payInfo.out_trade_no;
-                    this.saveFormId(formId, order_sn);
                     resolve(returnParams);
                 } else {
                     reject(res);
@@ -86,29 +84,6 @@ module.exports = class extends think.Service {
         let res = total_fee.actual_price;
         return res;
     }
-    async saveFormId(formId, order_sn) {
-        let orderInfo = await this.model('order').where({
-            order_sn: order_sn
-        }).field('user_id,id').find();
-        const currentTime = parseInt(new Date().getTime() / 1000);
-        let data = {
-            form_id: formId,
-            order_id: orderInfo.id,
-            user_id: orderInfo.user_id,
-            add_time: currentTime
-        }
-        let info = await this.model('formid').where({
-            order_id: orderInfo.id
-        }).find();
-        if (think.isEmpty(info)) {
-            await this.model('formid').add(data);
-        } else {
-            await this.model('formid').where({
-                order_id: orderInfo.id
-            }).update(data);
-        }
-    }
-    
     /**
      * 生成排序后的支付参数 query
      * @param queryObj
