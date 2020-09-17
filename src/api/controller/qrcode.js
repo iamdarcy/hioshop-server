@@ -1,7 +1,7 @@
 const Base = require('./base.js');
 const rp = require('request-promise');
 const fs = require('fs');
-const http = require("http");
+const http = require("https");
 const path = require('path');
 // const mineType = require('mime-types');
 module.exports = class extends Base {
