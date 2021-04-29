@@ -32,7 +32,7 @@ git clone https://github.com/iamdarcy/hioshop-server
 ```
 CREATE SCHEMA `hiolabsDB` DEFAULT CHARACTER SET utf8mb4 ;
 ```
-导入hioshop.sql命令:
+导入hiolabsDB.sql命令:
 ```shell
 mysql -u{username} -p{password}  //进入mysql终端
 
