@@ -23,9 +23,9 @@ https://www.bilibili.com/video/av89567916
 git clone https://github.com/iamdarcy/hioshop-server
 ```
 
-+ 创建数据库hiolabsDB并导入项目根目录下的hiolabsDB.sql.sql
++ 创建数据库hiolabsDB并导入项目根目录下的hiolabsDB.sql
 
-推荐使用软件Navicat创建和管理数据库与导入项目根目录下的hiolabsDB.sql.sql 
+推荐使用软件Navicat创建和管理数据库与导入项目根目录下的hiolabsDB.sql
 
 
 也可以用以下命令创建：
