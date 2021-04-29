@@ -22,11 +22,26 @@ https://www.bilibili.com/video/av89567916
 ```
 git clone https://github.com/iamdarcy/hioshop-server
 ```
-+ 创建数据库hiolabsDB并导入项目根目录下的hioshop.sql  
-推荐使用软件Navicat创建和管理数据库，也可以用以下命令创建：
+
++ 创建数据库hiolabsDB并导入项目根目录下的hiolabsDB.sql.sql
+
+推荐使用软件Navicat创建和管理数据库与导入项目根目录下的hiolabsDB.sql.sql 
+
+
+也可以用以下命令创建：
 ```
 CREATE SCHEMA `hiolabsDB` DEFAULT CHARACTER SET utf8mb4 ;
 ```
+导入hioshop.sql命令:
+```shell
+mysql -u{username} -p{password}  //进入mysql终端
+
+use hiolabsDB;   //切换到hiolabsDB数据库
+
+source {脚本所在目录}/hiolabsDB.sql //导入数据库脚本
+```
+
+
 > 注意数据库字符编码为utf8mb4 
 + 更改数据库配置
   src/common/config/database.js
