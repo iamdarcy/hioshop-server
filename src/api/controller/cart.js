@@ -3,17 +3,18 @@ const moment = require('moment');
 const pinyin = require("pinyin");
 module.exports = class extends Base {
     async getCart(type) {
+		const userId = this.getLoginUserId();
         let cartList = [];
         if(type == 0){
             cartList = await this.model('cart').where({
-                user_id: think.userId,
+                user_id: userId,
                 is_delete: 0,
                 is_fast: 0,
             }).select();
         }
         else{
             cartList = await this.model('cart').where({
-                user_id: think.userId,
+                user_id: userId,
                 is_delete: 0,
                 is_fast: 1
             }).select();
@@ -32,7 +33,7 @@ module.exports = class extends Base {
             if (think.isEmpty(product)) {
                 await this.model('cart').where({
                     product_id: cartItem.product_id,
-                    user_id: think.userId,
+                    user_id: userId,
                     is_delete: 0,
                 }).update({
                     is_delete: 1
@@ -44,7 +45,7 @@ module.exports = class extends Base {
                 if (productNum <= 0 || product.is_on_sale == 0) {
                     await this.model('cart').where({
                         product_id: cartItem.product_id,
-                        user_id: think.userId,
+                        user_id: userId,
                         checked: 1,
                         is_delete: 0,
                     }).update({
@@ -73,7 +74,7 @@ module.exports = class extends Base {
                 cartItem.weight_count = cartItem.number * Number(cartItem.goods_weight);
                 await this.model('cart').where({
                     product_id: cartItem.product_id,
-                    user_id: think.userId,
+                    user_id: userId,
                     is_delete: 0,
                 }).update({
                     number: cartItem.number,
@@ -90,7 +91,7 @@ module.exports = class extends Base {
                 goodsAmount: goodsAmount.toFixed(2),
                 checkedGoodsCount: checkedGoodsCount,
                 checkedGoodsAmount: cAmount,
-                user_id: think.userId,
+                user_id: userId,
                 numberChange: numberChange
             }
         };
@@ -103,6 +104,7 @@ module.exports = class extends Base {
         return this.success(await this.getCart(0));
     }
     async addAgain(goodsId, productId, number) {
+		const userId = this.getLoginUserId();;
         const currentTime = parseInt(new Date().getTime() / 1000);
         const goodsInfo = await this.model('goods').where({
             id: goodsId
@@ -121,7 +123,7 @@ module.exports = class extends Base {
         }
         // 判断购物车中是否存在此规格商品
         const cartInfo = await this.model('cart').where({
-            user_id: think.userId,
+            user_id: userId,
             product_id: productId,
             is_delete: 0
         }).find();
@@ -150,7 +152,7 @@ module.exports = class extends Base {
                 freight_template_id: goodsInfo.freight_template_id,
                 list_pic_url: goodsInfo.list_pic_url,
                 number: number,
-                user_id: think.userId,
+                user_id: userId,
                 retail_price: retail_price,
                 add_price: retail_price,
                 goods_specifition_name_value: goodsSepcifitionValue.join(';'),
@@ -165,7 +167,7 @@ module.exports = class extends Base {
                 return this.fail(400, '库存都不够啦');
             }
             await this.model('cart').where({
-                user_id: think.userId,
+                user_id: userId,
                 product_id: productId,
                 is_delete: 0,
                 id: cartInfo.id
@@ -182,6 +184,7 @@ module.exports = class extends Base {
      */
     async addAction() {
         const goodsId = this.post('goodsId');
+		const userId = this.getLoginUserId();;
         const productId = this.post('productId');
         const number = this.post('number');
         const addType = this.post('addType');
@@ -204,7 +207,7 @@ module.exports = class extends Base {
         }
         // 判断购物车中是否存在此规格商品
         const cartInfo = await this.model('cart').where({
-            user_id: think.userId,
+            user_id: userId,
             product_id: productId,
             is_delete: 0
         }).find();
@@ -212,7 +215,7 @@ module.exports = class extends Base {
         if (addType == 1) {
             await this.model('cart').where({
                 is_delete: 0,
-                user_id: think.userId
+                user_id: userId
             }).update({
                 checked: 0
             });
@@ -237,7 +240,7 @@ module.exports = class extends Base {
                 freight_template_id: goodsInfo.freight_template_id,
                 list_pic_url: goodsInfo.list_pic_url,
                 number: number,
-                user_id: think.userId,
+                user_id: userId,
                 retail_price: retail_price,
                 add_price: retail_price,
                 goods_specifition_name_value: goodsSepcifitionValue.join(';'),
@@ -273,7 +276,7 @@ module.exports = class extends Base {
                     freight_template_id: goodsInfo.freight_template_id,
                     list_pic_url: goodsInfo.list_pic_url,
                     number: number,
-                    user_id: think.userId,
+                    user_id: userId,
                     retail_price: retail_price,
                     add_price: retail_price,
                     goods_specifition_name_value: goodsSepcifitionValue.join(';'),
@@ -288,7 +291,7 @@ module.exports = class extends Base {
                     return this.fail(400, '库存都不够啦');
                 }
                 await this.model('cart').where({
-                    user_id: think.userId,
+                    user_id: userId,
                     product_id: productId,
                     is_delete: 0,
                     id: cartInfo.id
@@ -296,7 +299,7 @@ module.exports = class extends Base {
                     retail_price: retail_price
                 });
                 await this.model('cart').where({
-                    user_id: think.userId,
+                    user_id: userId,
                     product_id: productId,
                     is_delete: 0,
                     id: cartInfo.id
@@ -336,6 +339,7 @@ module.exports = class extends Base {
     }
     // 是否选择商品，如果已经选择，则取消选择，批量操作
     async checkedAction() {
+		const userId = this.getLoginUserId();;
         let productId = this.post('productIds').toString();
         const isChecked = this.post('isChecked');
         if (think.isEmpty(productId)) {
@@ -346,7 +350,7 @@ module.exports = class extends Base {
             product_id: {
                 'in': productId
             },
-            user_id: think.userId,
+            user_id: userId,
             is_delete: 0
         }).update({
             checked: parseInt(isChecked)
@@ -356,12 +360,13 @@ module.exports = class extends Base {
     // 删除选中的购物车商品，批量删除
     async deleteAction() {
         let productId = this.post('productIds');
+		const userId = this.getLoginUserId();;
         if (think.isEmpty(productId)) {
             return this.fail('删除出错');
         }
         await this.model('cart').where({
             product_id: productId,
-            user_id: think.userId,
+            user_id: userId,
             is_delete: 0
         }).update({
             is_delete: 1
@@ -372,8 +377,9 @@ module.exports = class extends Base {
     // 获取购物车商品的总件件数
     async goodsCountAction() {
         const cartData = await this.getCart(0);
+		const userId = this.getLoginUserId();;
         await this.model('cart').where({
-            user_id: think.userId,
+            user_id: userId,
             is_delete: 0,
             is_fast: 1
         }).update({
@@ -391,6 +397,7 @@ module.exports = class extends Base {
      */
     async checkoutAction() {
         const currentTime = parseInt(new Date().getTime() / 1000);
+		const userId = this.getLoginUserId();;
         let orderFrom = this.get('orderFrom');
         const type = this.get('type'); // 是否团购
         const addressId = this.get('addressId'); // 收货地址id
@@ -437,13 +444,13 @@ module.exports = class extends Base {
         if (addressId == '' || addressId == 0) {
             checkedAddress = await this.model('address').where({
                 is_default: 1,
-                user_id: think.userId,
+                user_id: userId,
 				is_delete:0
             }).find();
         } else {
             checkedAddress = await this.model('address').where({
                 id: addressId,
-                user_id: think.userId,
+                user_id: userId,
 				is_delete:0
             }).find();
         }
@@ -599,12 +606,13 @@ module.exports = class extends Base {
         });
     }
     async getAgainCart(orderFrom) {
+		const userId = this.getLoginUserId();;
         const againGoods = await this.model('order_goods').where({
             order_id: orderFrom
         }).select();
         await this.model('cart').where({
             is_delete: 0,
-            user_id: think.userId
+            user_id: userId
         }).update({
             checked: 0
         });
@@ -612,7 +620,7 @@ module.exports = class extends Base {
             await this.addAgain(item.goods_id, item.product_id, item.number);
         }
         const cartList = await this.model('cart').where({
-            user_id: think.userId,
+            user_id: userId,
             is_fast: 0,
             is_delete: 0
         }).select();
@@ -637,7 +645,7 @@ module.exports = class extends Base {
             if (num <= 0) {
                 await this.model('cart').where({
                     product_id: cartItem.product_id,
-                    user_id: think.userId,
+                    user_id: userId,
                     checked: 1,
                     is_delete: 0,
                 }).update({
@@ -657,7 +665,7 @@ module.exports = class extends Base {
                 goodsAmount: goodsAmount.toFixed(2),
                 checkedGoodsCount: checkedGoodsCount,
                 checkedGoodsAmount: cAmount,
-                user_id: think.userId
+                user_id: userId
             }
         };
     }

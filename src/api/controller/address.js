@@ -3,8 +3,9 @@ const pinyin = require("pinyin");
 const generate = require('nanoid/generate');
 module.exports = class extends Base {
     async getAddressesAction() {
+		const userId = this.getLoginUserId();;
         const addressList = await this.model('address').where({
-            user_id: think.userId,
+            user_id: userId,
             is_delete: 0
         }).order('id desc').select();
         let itemKey = 0;
@@ -19,6 +20,7 @@ module.exports = class extends Base {
     }
     async saveAddressAction() {
         let addressId = this.post('id');
+		const userId = this.getLoginUserId();;
         const addressData = {
             name: this.post('name'),
             mobile: this.post('mobile'),
@@ -34,14 +36,14 @@ module.exports = class extends Base {
         } else {
             await this.model('address').where({
                 id: addressId,
-                user_id: think.userId
+                user_id: userId
             }).update(addressData);
         }
         // 如果设置为默认，则取消其它的默认
         if (this.post('is_default') == 1) {
             await this.model('address').where({
                 id: ['<>', addressId],
-                user_id: think.userId
+                user_id: userId
             }).update({
                 is_default: 0
             });
@@ -52,9 +54,10 @@ module.exports = class extends Base {
         return this.success(addressInfo);
     }
     async deleteAddressAction() {
-        let id = this.post('id');
+        const id = this.post('id');
+		const userId = this.getLoginUserId();;
         let d = await this.model('address').where({
-            user_id: think.userId,
+            user_id: userId,
             id: id
         }).update({
             is_delete: 1
@@ -63,8 +66,9 @@ module.exports = class extends Base {
     }
     async addressDetailAction() {
         const addressId = this.get('id');
+		const userId = this.getLoginUserId();;
         const addressInfo = await this.model('address').where({
-            user_id: think.userId,
+            user_id: userId,
             id: addressId
         }).find();
         if (!think.isEmpty(addressInfo)) {

@@ -9,15 +9,16 @@ module.exports = class extends Base {
      * @return {Promise} []
      */
     async listAction() {
-        const showType = this.get('showType');
+		// const userId = this.getLoginUserId();;
+		const userId = this.getLoginUserId();
+		const showType = this.get('showType');
         const page = this.get('page');
         const size = this.get('size');
         let status = [];
         status = await this.model('order').getOrderStatus(showType);
         let is_delete = 0;
-        // const orderList = await this.model('order').where({ user_id: think.userId }).page(1, 10).order('add_time DESC').countSelect();
         const orderList = await this.model('order').field('id,add_time,actual_price,freight_price,offline_pay').where({
-            user_id: think.userId,
+            user_id: userId,
             is_delete: is_delete,
             order_type: ['<', 7],
             order_status: ['IN', status]
@@ -26,7 +27,7 @@ module.exports = class extends Base {
         for (const item of orderList.data) {
             // 订单的商品
             item.goodsList = await this.model('order_goods').field('id,list_pic_url,number').where({
-                user_id: think.userId,
+                user_id: userId,
                 order_id: item.id,
                 is_delete: 0
             }).select();
@@ -50,11 +51,12 @@ module.exports = class extends Base {
     //
     async countAction() {
         const showType = this.get('showType');
+		const userId = this.getLoginUserId();;
         let status = [];
         status = await this.model('order').getOrderStatus(showType);
         let is_delete = 0;
         const allCount = await this.model('order').where({
-            user_id: think.userId,
+            user_id: userId,
             is_delete: is_delete,
             order_status: ['IN', status]
         }).count('id');
@@ -65,7 +67,8 @@ module.exports = class extends Base {
     // 获得订单数量状态
     //
     async orderCountAction() {
-        let user_id = think.userId;
+		// const user_id = this.getLoginUserId();;
+		const user_id = this.getLoginUserId();
         let toPay = await this.model('order').where({
             user_id: user_id,
             is_delete: 0,
@@ -93,8 +96,9 @@ module.exports = class extends Base {
     }
     async detailAction() {
         const orderId = this.get('orderId');
+		const userId = this.getLoginUserId();;
         const orderInfo = await this.model('order').where({
-            user_id: think.userId,
+            user_id: userId,
             id: orderId
         }).find();
         const currentTime = parseInt(new Date().getTime() / 1000);
@@ -113,7 +117,7 @@ module.exports = class extends Base {
         orderInfo.full_region = orderInfo.province_name + orderInfo.city_name + orderInfo.district_name;
         orderInfo.postscript = Buffer.from(orderInfo.postscript, 'base64').toString();
         const orderGoods = await this.model('order_goods').where({
-            user_id: think.userId,
+            user_id: userId,
             order_id: orderId,
             is_delete: 0
         }).select();
@@ -170,10 +174,11 @@ module.exports = class extends Base {
      * @return {Promise} []
      */
     async orderGoodsAction() {
+		const userId = this.getLoginUserId();;
         const orderId = this.get('orderId');
         if (orderId > 0) {
             const orderGoods = await this.model('order_goods').where({
-                user_id: think.userId,
+                user_id: userId,
                 order_id: orderId,
                 is_delete: 0
             }).select();
@@ -184,7 +189,7 @@ module.exports = class extends Base {
             return this.success(orderGoods);
         } else {
             const cartList = await this.model('cart').where({
-                user_id: think.userId,
+                user_id: userId,
                 checked:1,
                 is_delete: 0,
                 is_fast: 0,
@@ -198,6 +203,7 @@ module.exports = class extends Base {
      */
     async cancelAction() {
         const orderId = this.post('orderId');
+		const userId = this.getLoginUserId();;
         // 检测是否能够取消
         const handleOption = await this.model('order').getOrderHandleOption(orderId);
         // console.log('--------------' + handleOption.cancel);
@@ -210,12 +216,12 @@ module.exports = class extends Base {
         };
         let orderInfo = await this.model('order').field('order_type').where({
             id: orderId,
-            user_id: think.userId
+            user_id: userId
         }).find();
         //取消订单，还原库存
         const goodsInfo = await this.model('order_goods').where({
             order_id: orderId,
-            user_id: think.userId
+            user_id: userId
         }).select();
         for (const item of goodsInfo) {
             let goods_id = item.goods_id;
@@ -292,6 +298,7 @@ module.exports = class extends Base {
      */
     async submitAction() {
         // 获取收货地址信息和计算运费
+		const userId = this.getLoginUserId();;
         const addressId = this.post('addressId');
         const freightPrice = this.post('freightPrice');
         const offlinePay = this.post('offlinePay');
@@ -305,7 +312,7 @@ module.exports = class extends Base {
         }
         // 获取要购买的商品
         const checkedGoodsList = await this.model('cart').where({
-            user_id: think.userId,
+            user_id: userId,
             checked: 1,
             is_delete: 0
         }).select();
@@ -354,12 +361,12 @@ module.exports = class extends Base {
         let sender_mobile = def.Tel;
         // let sender_address = '';
         let userInfo = await this.model('user').where({
-            id: think.userId
+            id: userId
         }).find();
         // const checkedAddress = await this.model('address').where({id: addressId}).find();
         const orderInfo = {
             order_sn: this.model('order').generateOrderNumber(),
-            user_id: think.userId,
+            user_id: userId,
             // 收货地址和运费
             consignee: checkedAddress.name,
             mobile: checkedAddress.mobile,
@@ -389,7 +396,7 @@ module.exports = class extends Base {
         const orderGoodsData = [];
         for (const goodsItem of checkedGoodsList) {
             orderGoodsData.push({
-                user_id: think.userId,
+                user_id: userId,
                 order_id: orderId,
                 goods_id: goodsItem.goods_id,
                 product_id: goodsItem.product_id,
@@ -442,7 +449,6 @@ module.exports = class extends Base {
      * @returns {Promise.<void>}
      */
     async expressAction() {
-        // let aliexpress = think.config('aliexpress');
         const currentTime = parseInt(new Date().getTime() / 1000);
         const orderId = this.get('orderId');
         let info = await this.model('order_express').where({
@@ -454,7 +460,7 @@ module.exports = class extends Base {
         const expressInfo = await this.model('order_express').where({
             order_id: orderId
         }).find();
-        // 如果is_finish == 1；或者 updateTime 小于 10分钟，
+        // 如果is_finish == 1；或者 updateTime 小于 1分钟，
         let updateTime = info.update_time;
         let com = (currentTime - updateTime) / 60;
         let is_finish = info.is_finish;
@@ -465,16 +471,7 @@ module.exports = class extends Base {
         } else {
             let shipperCode = expressInfo.shipper_code;
             let expressNo = expressInfo.logistic_code;
-            let code = shipperCode.substring(0, 2);
-            let shipperName = '';
-			let sfLastNo = think.config('aliexpress.sfLastNo');
-            if (code == "SF") {
-                shipperName = "SFEXPRESS";
-                expressNo = expressNo + ':'+ sfLastNo;
-            } else {
-                shipperName = shipperCode;
-            }
-            let lastExpressInfo = await this.getExpressInfo(shipperName, expressNo);
+            let lastExpressInfo = await this.getExpressInfo(shipperCode, expressNo);
             let deliverystatus = lastExpressInfo.deliverystatus;
             let newUpdateTime = lastExpressInfo.updateTime;
             newUpdateTime = parseInt(new Date(newUpdateTime).getTime() / 1000);
@@ -498,11 +495,11 @@ module.exports = class extends Base {
         }
         // return this.success(latestExpressInfo);
     }
-    async getExpressInfo(shipperName, expressNo) {
+    async getExpressInfo(shipperCode, expressNo) {
 		let appCode = "APPCODE "+ think.config('aliexpress.appcode');
         const options = {
             method: 'GET',
-            url: 'http://wuliu.market.alicloudapi.com/kdi?no=' + expressNo + '&type=' + shipperName,
+            url: 'http://wuliu.market.alicloudapi.com/kdi?no=' + expressNo + '&type=' + shipperCode,
             headers: {
                 "Content-Type": "application/json; charset=utf-8",
                 "Authorization": appCode

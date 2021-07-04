@@ -89,16 +89,6 @@ module.exports = class extends Base {
         }).limit(1).update({
             is_delete: 1
         });
-        // TODO 删除图片
-        return this.success();
-    }
-    async deleteAdImageAction(){
-        let id = this.post('id');
-        await this.model('ad').where({
-            id:id
-        }).update({
-            image_url:''
-        });
         return this.success();
     }
     async saleStatusAction() {

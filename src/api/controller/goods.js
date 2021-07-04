@@ -12,6 +12,7 @@ module.exports = class extends Base {
      */
     async detailAction() {
         const goodsId = this.get('id');
+		const userId = this.getLoginUserId();;
         const model = this.model('goods');
         let info = await model.where({
             id: goodsId,
@@ -24,7 +25,7 @@ module.exports = class extends Base {
             goods_id: goodsId,
             is_delete: 0,
         }).order('sort_order').limit(6).select();
-        await this.model('footprint').addFootprint(think.userId, goodsId);
+        await this.model('footprint').addFootprint(userId, goodsId);
         let productList = await model.getProductList(goodsId);
         let goodsNumber = 0;
         for (const item of productList) {
@@ -53,6 +54,7 @@ module.exports = class extends Base {
      * @returns {Promise.<*>}
      */
     async listAction() {
+		const userId = this.getLoginUserId();;
         const keyword = this.get('keyword');
         const sort = this.get('sort');
         const order = this.get('order');
@@ -67,7 +69,7 @@ module.exports = class extends Base {
             // 添加到搜索历史
             await this.model('search_history').add({
                 keyword: keyword,
-                user_id: think.userId,
+                user_id: userId,
                 add_time: parseInt(new Date().getTime() / 1000)
             });
             //    TODO 之后要做个判断，这个词在搜索记录中的次数，如果大于某个值，则将他存入keyword

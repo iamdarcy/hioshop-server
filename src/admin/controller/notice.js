@@ -71,8 +71,6 @@ module.exports = class extends Base {
     async destoryAction() {
         const id = this.post('id');
         await this.model('notice').where({id: id}).limit(1).delete();
-        // TODO 删除图片
-
         return this.success();
     }
 };

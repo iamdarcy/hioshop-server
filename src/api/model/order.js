@@ -16,7 +16,7 @@ module.exports = class extends think.Model {
             // TODO 这里会不会效率不高？
         } else if (showType == 1) {
             // 待付款订单
-            status.push(101, 801);
+            status.push(101);
         } else if (showType == 2) {
             // 待发货订单
             status.push(300);
@@ -50,7 +50,7 @@ module.exports = class extends think.Model {
         // 订单相关状态字段设计，采用单个字段表示全部的订单状态
         // 1xx表示订单取消和删除等状态：  101订单创建成功等待付款、102订单已取消、103订单已取消(自动)
         // 2xx表示订单支付状态：        201订单已付款，等待发货、202订单取消，退款中、203已退款
-        // 3xx表示订单物流相关状态：     301订单已发货，302用户确认收货、303系统自动收货
+        // 3xx表示订单物流相关状态：     300订单待发货，301订单已发货，302用户确认收货、303系统自动收货
         // 4xx表示订单完成的状态：      401已收货已评价
         // 5xx表示订单退换货相关的状态：  501已收货，退款退货 TODO
         // 如果订单已经取消或是已完成，则可删除和再次购买
@@ -58,6 +58,7 @@ module.exports = class extends think.Model {
         // if (status == 102) "已取消";
         // if (status == 103) "已取消(系统)";
         // if (status == 201) "已付款";
+        // if (status == 300) "待发货";
         // if (status == 301) "已发货";
         // if (status == 302) "已收货";
         // if (status == 303) "已收货(系统)";
@@ -113,10 +114,10 @@ module.exports = class extends think.Model {
         if (orderInfo.order_status === 102 || orderInfo.order_status === 103) {
             textCode.close = true;
         }
-        if (orderInfo.order_status === 201 || orderInfo.order_status === 300) {
+        if (orderInfo.order_status === 201 || orderInfo.order_status === 300) { //待发货
             textCode.delivery = true;
         }
-        if (orderInfo.order_status === 301) {
+        if (orderInfo.order_status === 301) { //已发货
             textCode.receive = true;
         }
         if (orderInfo.order_status === 401) {
@@ -252,7 +253,6 @@ module.exports = class extends think.Model {
      * @returns {Promise.<boolean>}
      */
     async updatePayData(orderId, info) {
-        console.log('=========================调用更新数据了==========================');
         let data = {
             pay_status: 2,
             order_status: 300,

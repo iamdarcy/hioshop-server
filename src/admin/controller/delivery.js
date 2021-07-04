@@ -6,7 +6,7 @@ module.exports = class extends Base {
      */
     async indexAction() {
         const data = await this.model('shipper').where({
-            id: ['<>', 0]
+            enabled:1
         }).select();
         return this.success(data);
     }

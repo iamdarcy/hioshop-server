@@ -2,9 +2,14 @@ const Base = require('./base.js');
 const rp = require('request-promise');
 module.exports = class extends Base {
     async loginByWeixinAction() {
-        const code = this.post('code');
-        const fullUserInfo = this.post('userInfo');
-        const userInfo = fullUserInfo.userInfo;
+        // const code = this.post('code');
+        const fullUserInfo = this.post('info');
+        const code =fullUserInfo.code;
+        const userInfo = JSON.parse(fullUserInfo.rawData);
+        console.log('userInfo')
+        console.log(code)
+        console.log(userInfo)
+        console.log('userInfo')
         let currentTime = parseInt(new Date().getTime() / 1000);
         const clientIp = ''; // 暂时不记录 ip test git
         // 获取openid
@@ -64,20 +69,19 @@ module.exports = class extends Base {
         }
         sessionData.user_id = userId;
         // 查询用户信息
-        let data = fullUserInfo.userInfo;
-        const newBuffer = Buffer.from(data.nickName);
-        let newNickname = newBuffer.toString('base64');
+        const newbuffer = Buffer.from(userInfo.nickName);
+        let nickname = newbuffer.toString('base64');
         // 更新登录信息
         await this.model('user').where({
             id: userId
         }).update({
             last_login_time: currentTime,
             last_login_ip: clientIp,
-            avatar: data.avatarUrl,
-            nickname: newNickname,
-            country: data.country,
-            province: data.province,
-            city: data.city
+            avatar: userInfo.avatarUrl,
+            nickname: nickname,
+            country: userInfo.country,
+            province: userInfo.province,
+            city: userInfo.city
         });
         const newUserInfo = await this.model('user').field('id,username,nickname,gender, avatar').where({
             id: userId

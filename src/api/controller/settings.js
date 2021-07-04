@@ -7,6 +7,7 @@ module.exports = class extends Base {
         return this.success(info);
     }
     async saveAction() {
+		let userId = this.getLoginUserId();;
         let name = this.post('name');
         let mobile = this.post('mobile');
         var myreg = /^(((13[0-9]{1})|(15[0-9]{1})|(18[0-9]{1})|(17[0-9]{1})|(16[0-9]{1})|(19[0-9]{1}))+\d{8})$/;
@@ -24,13 +25,14 @@ module.exports = class extends Base {
             name_mobile: 1
         };
         let info = await this.model('user').where({
-            id: think.userId
+            id: userId
         }).update(data);
         return this.success(info);
     }
     async userDetailAction() {
+		let userId = this.getLoginUserId();;
         let info = await this.model('user').where({
-            id: think.userId
+            id: userId
         }).field('mobile,name').find();
         return this.success(info);
     }

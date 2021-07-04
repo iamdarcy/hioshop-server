@@ -8,7 +8,7 @@ const http = require("http");
 
 module.exports = class extends think.Service {
     /**
-     * 根据header中的X-Nideshop-Token值获取用户id
+     * 根据header中的x-hioshop-token值获取用户id
      */
     async getUserId() {
         const token = think.token;

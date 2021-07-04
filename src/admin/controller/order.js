@@ -209,27 +209,6 @@ module.exports = class extends Base {
         let data = await model.where({
             id: id
         }).update(info);
-        let orderInfo = await this.model('order').where({
-            id: id
-        }).find();
-        let goods = await this.model('order_goods').where({
-            order_id: id
-        }).field('id,product_id,number,retail_price,list_pic_url').select();
-        let order_goods = [];
-        for (const item of goods) {
-            let product = await this.model('product').where({
-                id: item.product_id
-            }).find();
-            let data = {
-                name: product.goods_name,
-                sku_id: product.goods_sn,
-                amount: item.retail_price,
-                qty: item.number,
-                outer_oi_id: item.id,
-                pic: item.list_pic_url
-            };
-            order_goods.push(data);
-        }
         return this.success(data);
     }
     async savePrintInfoAction() {
@@ -580,7 +559,6 @@ module.exports = class extends Base {
         let orderInfo = await this.model('order').where({
             id: orderId
         }).field('user_id').find();
-     
         let user = await this.model('user').where({
             id: orderInfo.user_id
         }).find();
@@ -607,7 +585,7 @@ module.exports = class extends Base {
         let shippingTime = moment.unix(currentTime).format('YYYY-MM-DD HH:mm:ss');
         // 订单金额
 		// 订阅消息 请先在微信小程序的官方后台设置好订阅消息模板，然后根据自己的data的字段信息，设置好data
-        let TEMPLATE_ID = 'w6AMCJ0FI2LqjCjWPIrpnVWTsFgnlNlmCf9TTDmG6_U'
+		let TEMPLATE_ID = think.config('templateId.deliveryId');
         let message = {
             "touser": openId,
             "template_id": TEMPLATE_ID,
@@ -647,7 +625,7 @@ module.exports = class extends Base {
         }).update(updateData);
         return this.success(data);
     }
-    async orderDeliveryAction() {
+    async orderDeliveryAction() { // 发货api
         const orderId = this.get('orderId');
         const method = this.get('method');
         const deliveryId = this.get('shipper') || 0;
@@ -709,61 +687,65 @@ module.exports = class extends Base {
             }).update(updateData);
             expressName = '自提件';
         }
-        let orderInfo = await this.model('order').where({
-            id: orderId
-        }).field('user_id').find();
-        let user = await this.model('user').where({
-            id: orderInfo.user_id
-        }).find();
-        let openId = user.weixin_openid;
-        // 物品名称
-        // 快递单号
-        // 快递公司
-        // 发货时间
-        // 温馨提示
-        let goodsInfo = await this.model('order_goods').where({
-            order_id: orderId
-        }).field('goods_name').select();
-        // 物品名称
-        let goodsName = '';
-        if (goodsInfo.length == 1) {
-            goodsName = goodsInfo[0].goods_name
-        } else {
-            goodsName = goodsInfo[0].goods_name + '等' + goodsInfo.length + '件商品'
-        }
-        // 支付时间
-        let shippingTime = moment.unix(currentTime).format('YYYY-MM-DD HH:mm:ss');
-        // 订单金额
-		// 订阅消息 请先在微信小程序的官方后台设置好订阅消息模板，然后根据自己的data的字段信息，设置好data
-        let TEMPLATE_ID = 'w6AMCJ0FI2LqjCjWPIrpnVWTsFgnlNlmCf9TTDmG6_U'
-        let message = {
-            "touser": openId,
-            "template_id": TEMPLATE_ID,
-            "page": '/pages/ucenter/index/index',
-            "miniprogram_state":"formal",
-            "lang":"zh_CN",
-            "data": {
-              "thing7": {
-                  "value": goodsName
-              },
-              "date2": {
-                  "value": shippingTime
-              },
-              "name3": {
-                  "value": expressName
-              },
-              "character_string4": {
-                  "value": logistic_code
-              } ,
-              "thing9": {
-                  "value": '签收前请检查包裹！'
-              }
-          }
-        }
-        const tokenServer = think.service('weixin', 'api');
-        const token = await tokenServer.getAccessToken();
-        const res = await tokenServer.sendMessage(token,message);
+		await this.deliveryMessage(method,orderId,expressName,logistic_code);
     }
+	async deliveryMessage(method,orderId,expressName,logistic_code){
+		let orderInfo = await this.model('order').where({
+		    id: orderId
+		}).field('user_id').find();
+		let user = await this.model('user').where({
+		    id: orderInfo.user_id
+		}).field('weixin_openid').find();
+		let openId = user.weixin_openid;
+		// 物品名称
+		// 快递单号
+		// 快递公司
+		// 发货时间
+		// 温馨提示
+		let goodsInfo = await this.model('order_goods').where({
+		    order_id: orderId
+		}).field('goods_name').select();
+		// 物品名称
+		let goodsName = '';
+		if (goodsInfo.length == 1) {
+		    goodsName = goodsInfo[0].goods_name
+		} else {
+		    goodsName = goodsInfo[0].goods_name + '等' + goodsInfo.length + '件商品'
+		}
+		// 支付时间
+		let currentTime = parseInt(new Date().getTime() / 1000);
+		let shippingTime = moment.unix(currentTime).format('YYYY-MM-DD HH:mm:ss');
+		// 订单金额
+		// 订阅消息 请先在微信小程序的官方后台设置好订阅消息模板，然后根据自己的data的字段信息，设置好data
+		let TEMPLATE_ID = think.config('templateId.deliveryId');
+		let message = {
+		    "touser": openId,
+		    "template_id": TEMPLATE_ID,
+		    "page": '/pages/ucenter/index/index',
+		    "miniprogram_state":"formal",
+		    "lang":"zh_CN",
+		    "data": {
+		      "thing7": {
+		          "value": goodsName
+		      },
+		      "date2": {
+		          "value": shippingTime
+		      },
+		      "name3": {
+		          "value": expressName
+		      },
+		      "character_string4": {
+		          "value": logistic_code
+		      } ,
+		      "thing9": {
+		          "value": '签收前请检查包裹！'
+		      }
+		  }
+		}
+		const tokenServer = think.service('weixin', 'api');
+		const token = await tokenServer.getAccessToken();
+		const res = await tokenServer.sendMessage(token,message);
+	}
     async checkExpressAction() {
         const id = this.get('orderId');
         let info = await this.model('order_express').where({

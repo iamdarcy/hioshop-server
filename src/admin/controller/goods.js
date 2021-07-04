@@ -461,7 +461,7 @@ module.exports = class extends Base {
         }
         return this.success(newData);
     }
-    async getAllCategoryAction() { // 晓玲的算法，她要
+    async getAllCategoryAction() { // 老婆的算法
         const model = this.model('category');
         const data = await model.where({
             is_show: 1,
@@ -558,6 +558,29 @@ module.exports = class extends Base {
                     await this.model('product').add(item);
                 }
             }
+			for(const [index, item] of values.gallery.entries()){
+				if(item.is_delete == 1 && item.id > 0){
+					await this.model('goods_gallery').where({
+						id:item.id
+					}).update({
+						is_delete:1
+					})
+				}
+				else if(item.is_delete == 0 && item.id > 0){
+					await this.model('goods_gallery').where({
+						id:item.id
+					}).update({
+						sort_order:index
+					})
+				}
+				else if(item.is_delete == 0 && item.id == 0){
+					await this.model('goods_gallery').add({
+						goods_id:id,
+						img_url:item.url,
+						sort_order:index
+					})
+				}
+			}
         } else {
             delete values.id;
             goods_id = await model.add(values);
@@ -573,6 +596,13 @@ module.exports = class extends Base {
                 item.is_on_sale = 1;
                 await this.model('product').add(item);
             }
+			for(const [index, item] of values.gallery.entries()){
+				await this.model('goods_gallery').add({
+					goods_id:goods_id,
+					img_url:item.url,
+					sort_order:index
+				})
+			}
         }
         let pro = await this.model('product').where({
             goods_id: goods_id,
@@ -628,11 +658,11 @@ module.exports = class extends Base {
                 id: goods_id
             }).update(info);
         }
-        return this.success(values);
+        return this.success(goods_id);
     }
     async updatePriceAction() {
         let data = this.post('');
-        // console.log(data);
+		let goods_id = data.goods_id;
         await this.model('goods_specification').where({
             id: data.goods_specification_ids
         }).update({
@@ -641,6 +671,14 @@ module.exports = class extends Base {
         await this.model('product').where({
             id: data.id
         }).update(data);
+		let pro = await this.model('product').where({
+		    goods_id: goods_id,
+		    is_on_sale: 1,
+		    is_delete: 0
+		}).select();
+		if(pro.length == 0){
+			return this.fail(100,'商品的规格数量至少1个')
+		}
         await this.model('cart').where({
             product_id: data.id,
             is_delete: 0,
@@ -650,12 +688,7 @@ module.exports = class extends Base {
             goods_sn: data.goods_sn
         });
         delete data.value;
-        let goods_id = data.goods_id;
-        let pro = await this.model('product').where({
-            goods_id: goods_id,
-            is_on_sale: 1,
-            is_delete: 0
-        }).select();
+     
         if (pro.length > 1) {
             let goodsNum = await this.model('product').where({
                 goods_id: goods_id,
@@ -693,7 +726,7 @@ module.exports = class extends Base {
                 min_retail_price: minPrice,
                 min_cost_price: minCost,
             });
-        } else {
+        } else if(pro.length == 1){
             let info = {
                 goods_number: pro[0].goods_number,
                 retail_price: pro[0].retail_price,
@@ -781,12 +814,13 @@ module.exports = class extends Base {
         const data = await this.model('goods_gallery').where({
             goods_id: goodsId,
             is_delete:0
-        }).select();
+        }).order('sort_order asc').select();
         let galleryData = [];
         for (const item of data) {
             let pdata = {
                 id: item.id,
-                url: item.img_url
+                url: item.img_url,
+				is_delete:0,
             }
             galleryData.push(pdata);
         }
@@ -852,13 +886,10 @@ module.exports = class extends Base {
         }).update({
             is_delete: 1
         });
-        // TODO 删除图片
         return this.success();
     }
     async uploadHttpsImageAction() {
         let url = this.post('url');
-        console.log('----------------------');
-        console.log(url);
         let accessKey = think.config('qiniuHttps.access_key');
         let secretKey = think.config('qiniuHttps.secret_key');
         let domain = think.config('qiniuHttps.domain');
@@ -877,7 +908,6 @@ module.exports = class extends Base {
         else if(zoneNum == 3){
             config.zone = qiniu.zone.Zone_na0;
         }
-
         else if(zoneNum == 4){
             config.zone = qiniu.zone.Zone_as0;
         }

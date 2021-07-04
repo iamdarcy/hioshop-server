@@ -71,6 +71,7 @@ module.exports = class extends think.Model {
      */
     async getLatestOrderExpressByAli(orderId) {
         // let aliexpress = think.config('aliexpress');
+		
         const currentTime = parseInt(new Date().getTime() / 1000);
         console.log('==============orderExpress===============');
         let info = await this.model('order_express').where({
@@ -87,15 +88,11 @@ module.exports = class extends think.Model {
         let com = (currentTime - updateTime) / 60;
         let is_finish = info.is_finish;
         if (is_finish == 1) {
-            console.log('--1');
             return expressInfo;
         } else if (updateTime != 0 && com < 20) {
-            console.log('--2');
             return expressInfo;
         } else {
-            console.log('--3');
             let shipperCode = expressInfo.shipper_code;
-            console.log(expressInfo);
             let expressNo = expressInfo.logistic_code;
             let code = shipperCode.substring(0, 2);
             let shipperName = '';

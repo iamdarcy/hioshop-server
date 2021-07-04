@@ -8,7 +8,7 @@ module.exports = class extends Base {
      */
     async deleteAction() {
         const footprintId = this.post('footprintId');
-        const userId = think.userId;    
+        const userId = this.getLoginUserId();; 
         // 删除当天的同一个商品的足迹
         await this.model('footprint').where({
             user_id: userId,
@@ -23,13 +23,14 @@ module.exports = class extends Base {
     async listAction() {
         const page = this.get('page');
         const size = this.get('size');
+		const userId = this.getLoginUserId();;
         const list = await this.model('footprint').alias('f').join({
             table: 'goods',
             join: 'left',
             as: 'g',
             on: ['f.goods_id', 'g.id']
         }).where({
-            user_id: think.userId
+            user_id: userId
         }).page(page, size).order({
             add_time: 'desc'
         }).field('id,goods_id,add_time').countSelect();

@@ -2,6 +2,11 @@ const Base = require('./base.js');
 const moment = require('moment');
 
 module.exports = class extends Base {
+	async checkLoginAction(){
+		if(think.userId == 0){
+			return this.fail(404,'请登录');
+		}
+	}
     async indexAction() {
         const goodsOnsale = await this.model('goods').where({is_on_sale: 1,is_delete:0}).count();
         const orderToDelivery = await this.model('order').where({order_status: 300}).count();

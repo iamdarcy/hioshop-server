@@ -315,7 +315,7 @@ module.exports = class extends Base {
         }
         return this.success(newData);
     }
-    async getAllCategoryAction() { // 晓玲的算法，她要
+    async getAllCategoryAction() { // 老婆的算法
         const model = this.model('category');
         const data = await model.where({
             is_show: 1,
@@ -387,7 +387,6 @@ module.exports = class extends Base {
         await this.model('goods').where({
             id: id
         }).limit(1).delete();
-        // TODO 删除图片
         return this.success();
     }
 };

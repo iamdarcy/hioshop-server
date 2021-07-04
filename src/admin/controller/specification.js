@@ -30,7 +30,6 @@ module.exports = class extends Base {
             specification_id = specValueData.specification_id;
             item.value = specValueData.value;
         }
-        console.log(data);
         let dataInfo = {
             specData: data,
             specValue: specification_id

@@ -276,7 +276,6 @@ module.exports = class extends Base {
         await this.model('user').where({
             id: id
         }).limit(1).delete();
-        // TODO 删除图片
         return this.success();
     }
 };
