@@ -22,15 +22,16 @@ module.exports = class extends Base {
             last_login_ip: this.ctx.ip
         });
         const TokenSerivce = this.service('token', 'admin');
-        const sessionKey = await TokenSerivce.create({
-            id: admin.id
-        });
+        let sessionData = {}
+        sessionData.user_id = admin.id
+        const sessionKey = await TokenSerivce.create(sessionData);
         if (think.isEmpty(sessionKey)) {
             return this.fail('登录失败');
         }
         const userInfo = {
             id: admin.id,
             username: admin.username,
+            name:admin.name
         };
         return this.success({
             token: sessionKey,

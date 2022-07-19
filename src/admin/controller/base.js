@@ -4,10 +4,9 @@ module.exports = class extends think.Controller {
     think.token = this.ctx.header['x-hioshop-token'] || '';
     const tokenSerivce = think.service('token', 'admin');
     think.userId = await tokenSerivce.getUserId();
-
     // 只允许登录操作
-    if (this.ctx.controller !== 'auth') {
-      if (think.userId <= 0) {
+    if (this.ctx.controller != 'auth') {
+      if (think.userId <= 0 || think.userId == undefined) {
         return this.fail(401, '请先登录');
       }
     }

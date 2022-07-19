@@ -7,7 +7,7 @@ const http = require("http");
 module.exports = class extends Base {
     async indexAction() {
         //auto render template file index_index.html
-        // return this.display();
+        return this.display();
     }
     async appInfoAction() {
         const banner = await this.model('ad').where({

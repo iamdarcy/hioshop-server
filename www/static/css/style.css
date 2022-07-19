@@ -1,0 +1,58 @@
+body {
+ margin: 0;
+ padding: 0;
+ width: 100%;
+ height: 100%;
+}
+.wrap {
+ width: 100vw;
+ height: 100vh;
+ background: url("/static/images/background.jpg");
+}
+
+.top {
+ height: 140px;
+ padding: 20px 40px;
+ color: #fff;
+}
+
+.top .logo {
+ font-size: 20px;
+ margin-bottom: 20px;
+}
+
+.top .tip {
+ font-size: 13px;
+}
+
+.bottom {
+ position: fixed;
+ width: 100%;
+ bottom: 20px;
+ margin-bottom: 20px;
+ color: #fff;
+ font-size: 16px;
+ color: #fff;
+ display: flex;
+ justify-content: center;
+}
+.middle {
+ display: flex;
+ justify-content: center;
+ align-items: center;
+ font-size: 32px;
+ color: #fff;
+}
+a:link {
+ color: #fff;
+ text-decoration: none;
+}
+a:visited {
+ text-decoration: none;
+ color: #fff;
+}
+
+a:hover {
+ text-decoration: underline;
+ color: #ccc;
+}

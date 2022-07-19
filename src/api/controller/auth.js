@@ -6,10 +6,6 @@ module.exports = class extends Base {
         const fullUserInfo = this.post('info');
         const code =fullUserInfo.code;
         const userInfo = JSON.parse(fullUserInfo.rawData);
-        console.log('userInfo')
-        console.log(code)
-        console.log(userInfo)
-        console.log('userInfo')
         let currentTime = parseInt(new Date().getTime() / 1000);
         const clientIp = ''; // 暂时不记录 ip test git
         // 获取openid

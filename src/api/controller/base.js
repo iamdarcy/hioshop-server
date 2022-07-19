@@ -17,7 +17,6 @@ module.exports = class extends think.Controller {
 	 * @returns {*}
 	 */
 	getLoginUserId() {
-		// 开始修复userId的问题
 		const token = this.ctx.header['x-hioshop-token'] || '';
 		const tokenSerivce = think.service('token', 'api');
 		return tokenSerivce.getUserId(token);
