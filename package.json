@@ -1,6 +1,6 @@
 {
-  "name": "hioshop",
-  "description": "hioshop - open source mini program shop",
+  "name": "shop",
+  "description": "shop-server",
   "version": "1.0.0",
   "scripts": {
     "start": "node development.js",
