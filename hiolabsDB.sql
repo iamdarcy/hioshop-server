@@ -110,7 +110,7 @@ CREATE TABLE `hiolabs_admin` (
 -- Records of hiolabs_admin
 -- ----------------------------
 BEGIN;
-INSERT INTO `hiolabs_admin` VALUES (14, 'hiolabs', '4af5d2d0e6c2bd03dca28c884afdf0ee', 'HIOLABS', '::ffff:125.120.155.17', 1575036217, 0);
+INSERT INTO `hiolabs_admin` VALUES (14, 'root', 'c1f0fcf6a3fa0db8af9c5a7b32229b2d', 'HIOLABS', '::ffff:125.120.155.17', 1575036217, 0);
 COMMIT;
 
 -- ----------------------------
