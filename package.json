@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "gm": "^1.23.0",
-    "jsonwebtoken": "^8.0.0",
+    "jsonwebtoken": "^9.0.0",
     "jushuitan": "^1.0.2",
     "kcors": "^2.2.1",
     "lodash": "^4.17.4",
