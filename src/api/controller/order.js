@@ -69,30 +69,33 @@ module.exports = class extends Base {
     async orderCountAction() {
 		// const user_id = this.getLoginUserId();;
 		const user_id = this.getLoginUserId();
-        let toPay = await this.model('order').where({
-            user_id: user_id,
-            is_delete: 0,
-            order_type: ['<', 7],
-            order_status: ['IN', '101,801']
-        }).count('id');
-        let toDelivery = await this.model('order').where({
-            user_id: user_id,
-            is_delete: 0,
-            order_type: ['<', 7],
-            order_status: 300
-        }).count('id');
-        let toReceive = await this.model('order').where({
-            user_id: user_id,
-            order_type: ['<', 7],
-            is_delete: 0,
-            order_status: 301
-        }).count('id');
-        let newStatus = {
-            toPay: toPay,
-            toDelivery: toDelivery,
-            toReceive: toReceive,
+        if(user_id != 0){
+            let toPay = await this.model('order').where({
+                user_id: user_id,
+                is_delete: 0,
+                order_type: ['<', 7],
+                order_status: ['IN', '101,801']
+            }).count('id');
+            let toDelivery = await this.model('order').where({
+                user_id: user_id,
+                is_delete: 0,
+                order_type: ['<', 7],
+                order_status: 300
+            }).count('id');
+            let toReceive = await this.model('order').where({
+                user_id: user_id,
+                order_type: ['<', 7],
+                is_delete: 0,
+                order_status: 301
+            }).count('id');
+            let newStatus = {
+                toPay: toPay,
+                toDelivery: toDelivery,
+                toReceive: toReceive,
+            }
+            return this.success(newStatus);
         }
-        return this.success(newStatus);
+       
     }
     async detailAction() {
         const orderId = this.get('orderId');

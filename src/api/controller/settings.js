@@ -1,39 +1,53 @@
-const Base = require('./base.js');
+const Base = require("./base.js");
 module.exports = class extends Base {
-    async showSettingsAction() {
-        let info = await this.model('show_settings').where({
-            id: 1
-        }).find();
-        return this.success(info);
+  async showSettingsAction() {
+    let info = await this.model("show_settings")
+      .where({
+        id: 1,
+      })
+      .find();
+    return this.success(info);
+  }
+  async saveAction() {
+    let userId = this.getLoginUserId();
+    let name = this.post("name");
+    let mobile = this.post("mobile");
+    let nickName = this.post("nickName");
+    let avatar = this.post("avatar");
+    let name_mobile = 0;
+    if (name != "" && mobile != "") {
+      name_mobile = 1;
     }
-    async saveAction() {
-		let userId = this.getLoginUserId();;
-        let name = this.post('name');
-        let mobile = this.post('mobile');
-        var myreg = /^(((13[0-9]{1})|(15[0-9]{1})|(18[0-9]{1})|(17[0-9]{1})|(16[0-9]{1})|(19[0-9]{1}))+\d{8})$/;
-        if (mobile.length < 11) {
-            return this.fail(200, '长度不对');
-        } else if (!myreg.test(mobile)) {
-            return this.fail(300, '手机不对哦');
-        }
-        if (name == '' || mobile == '') {
-            return this.fail(100, '不能为空')
-        }
-        let data = {
-            name: name,
-            mobile: mobile,
-            name_mobile: 1
-        };
-        let info = await this.model('user').where({
-            id: userId
-        }).update(data);
-        return this.success(info);
+    const newbuffer = Buffer.from(nickName);
+    let nickname = newbuffer.toString("base64");
+    let data = {
+      name: name,
+      mobile: mobile,
+      nickname: nickname,
+      avatar: avatar,
+      name_mobile: name_mobile,
+    };
+    let info = await this.model("user")
+      .where({
+        id: userId,
+      })
+      .update(data);
+    return this.success(info);
+  }
+  async userDetailAction() {
+    let userId = this.getLoginUserId();
+    if (userId != 0) {
+      let info = await this.model("user")
+        .where({
+          id: userId,
+        })
+        .field("id,mobile,name,nickname,avatar")
+        .find();
+      info.nickname = Buffer.from(info.nickname, "base64").toString();
+      return this.success(info);
     }
-    async userDetailAction() {
-		let userId = this.getLoginUserId();;
-        let info = await this.model('user').where({
-            id: userId
-        }).field('mobile,name').find();
-        return this.success(info);
+    else{
+      return this.fail(100,'未登录')
     }
+  }
 };

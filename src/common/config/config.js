@@ -1,6 +1,7 @@
 // default config
 module.exports = {
     default_module: 'api',
+	port: 8360, //服务端口，可自定义
     weixin: {
         appid: 'wx7af111110000000', // 小程序 appid
         secret: 'cb8e5adce569f9bddce5b8123123e1115aaddce505', // 小程序密钥
@@ -41,10 +42,9 @@ module.exports = {
     aliexpress:{
         // https://market.aliyun.com/products/56928004/cmapi021863.html?spm=5176.730005.productlist.d_cmapi021863.6ba73524uQjLqE&innerSource=search_%E5%85%A8%E5%9B%BD%E5%BF%AB%E9%80%92%E7%89%A9%E6%B5%81%E6%9F%A5%E8%AF%A2-%E5%BF%AB%E9%80%92%E6%9F%A5%E8%AF%A2%E6%8E%A5%E5%8F%A3#sku=yuncode1586300000
         url:'http://wuliu.market.alicloudapi.com/kdi', //阿里云的物流查询api，收费的
-        appcode: 'asldjalsjdlasjdla' ,// 阿里云后台获取,
-		sfLastNo:'0580', // 顺丰寄件人后四位，这个根据自己的寄件人手机设置，如果寄件人是不固定的，那么需要在order_express自己写代码了。
+        appcode: 'asldjalsjdlasjdla' ,// 阿里云后台获取
     },
 	templateId:{
-		// deliveryTemplate:
-	}
+		deliveryId:'w6AMCJ0nVWTsFasdasdgnlNlmCf9TTDmG6_U' // 模板id。在订阅消息里设置好后就可以得到
+	},
 };
