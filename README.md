@@ -4,8 +4,8 @@
 + 测试数据来自上述开源项目
 + 服务端api基于Ｎode.js+ThinkJS+MySQL
 
-### 目前基于海风小店已经上线的几款微信小程序商城
-<img width="1400" src="http://git.hiolabs.com/miniapp.jpg"/>
+### 基于海风小店开发上线的小程序
+<img width="200" src="https://raw.githubusercontent.com/iamdarcy/hiolabs/master/git-images/mwyx.jpg">
 
 ### 视频教程
 https://www.bilibili.com/video/av89567916
@@ -14,15 +14,15 @@ https://www.bilibili.com/video/av89567916
 微信小程序项目：GitHub: https://github.com/iamdarcy/hioshop-miniprogram  
 管理后台项目：GitHub: https://github.com/iamdarcy/hioshop-admin
 
-<a target="_blank" href="https://www.aliyun.com/minisite/goods?userCode=zm04niet"><img width="1400" src="http://git.hiolabs.com/aliyun.jpg"/></a>
-阿里云主机优惠季<a target="_blank" href="https://www.aliyun.com/minisite/goods?userCode=zm04niet">立即去看看</a>
+<a target="_blank" href="https://www.aliyun.com/?source=5176.11533457&userCode=zm04niet"><img width="1400" src="https://raw.githubusercontent.com/iamdarcy/hiolabs/master/git-images/aliyun.jpg"></a>
+阿里云主机：低至2折 <a target="_blank" href="https://www.aliyun.com/?source=5176.11533457&userCode=zm04niet">立即去看看</a>
 
 ### 本地开发环境配置
 + 克隆项目到本地
 ```
 git clone https://github.com/iamdarcy/hioshop-server
 ```
-+ 创建数据库hiolabsDB并导入项目根目录下的hioshop.sql  
++ 创建数据库hiolabsDB并导入项目根目录下的hiolabsDB.sql 
 推荐使用软件Navicat创建和管理数据库，也可以用以下命令创建：
 ```
 CREATE SCHEMA `hiolabsDB` DEFAULT CHARACTER SET utf8mb4 ;
@@ -68,6 +68,9 @@ module.exports = {
 npm install
 npm start
 ```
+
+如果安装不成功，百度搜索cnpm，用淘宝源代替，替换后，用cnpm i进行安装依赖  
+
 启动后，本地访问 http://127.0.0.1:8360/
 
 ### 上线需要以下准备工作： 
@@ -80,9 +83,10 @@ npm start
 + 备案后的域名  
 + 如果卖食品，还需要《食品经营许可证》  
 
+也不一定用七牛云的服务，可以用本地存储，不过要自己开发上传功能，可以参考项目中的upload.js  
+
 客服使用微信小程序官方提供的客服功能即可
 
-具体进群交流 QQ群：824781955  
 
 ### 功能列表
 + 首页：搜索、Banner、公告、分类Icons、分类商品列表
@@ -97,7 +101,7 @@ npm start
 ### 最近更新 
 - 新增生成分享图的功能  
 在src/common/config/config.js需要设置好已经开通https的七牛bucket的参数
-<img width="1000" src="http://git.hiolabs.com/github/save-local.jpg"/>
+<img width="600" src="https://images.gitee.com/uploads/images/2020/1118/090429_8fc928b0_1794996.jpeg"/>  
 
 - 项目地址  
 服务端： https://github.com/iamdarcy/hioshop-server  
@@ -105,4 +109,9 @@ npm start
 微信小程序：https://github.com/iamdarcy/hioshop-miniprogram  
 
 - 本项目会持续更新和维护，喜欢别忘了 Star，有问题可通过微信、QQ群联系我，谢谢您的关注。
-<img width="1200" src="http://git.hiolabs.com/github/contact.jpg"/>
+- 我的微信号是lookgxl，加群时回答这个问题即可入群。  
+海风小店小程序商城1群 824781955（已满）  
+海风小店小程序商城2群 932101372（496）    
+海风小店小程序商城3群 1130172339（已满）  
+海风小店小程序商城4群 652317079    
+<img width="500" src="https://raw.githubusercontent.com/iamdarcy/hiolabs/master/git-images/contact.jpg"/>
