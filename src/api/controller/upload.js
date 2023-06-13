@@ -4,6 +4,7 @@ const path = require("path");
 
 module.exports = class extends Base {
   async uploadAvatarAction() {
+    const file = this.file('upload_file');
     let fileType = file.type;
     const spliceLength = fileType.lastIndexOf("/");
     let fileTypeText = fileType.slice(spliceLength + 1);

@@ -504,7 +504,8 @@ module.exports = class extends Base {
                 if (!think.isEmpty(ex)) {
                     // console.log('第一层：非默认邮费算法');
                     let groupData = await this.model('freight_template_group').where({
-                        id: ex.group_id
+                        id: ex.group_id,
+                        is_delete:0
                     }).find();
                     // 不为空，说明有模板，那么应用模板，先去判断是否符合指定的包邮条件，不满足，那么根据type 是按件还是按重量
                     let free_by_number = groupData.free_by_number;
@@ -542,7 +543,8 @@ module.exports = class extends Base {
                     // console.log('第二层：使用默认的邮费算法');
                     let groupData = await this.model('freight_template_group').where({
                         template_id: item.id,
-                        area: 0
+                        area: 0,
+                        is_delete:0,
                     }).find();
                     let free_by_number = groupData.free_by_number;
                     let free_by_money = groupData.free_by_money;
